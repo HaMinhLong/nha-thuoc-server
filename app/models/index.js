@@ -29,6 +29,10 @@ db.ward = require("../models/ward.model.js")(sequelize, Sequelize);
 db.user = require("../models/user.model.js")(sequelize, Sequelize);
 db.specialist = require("../models/specialist.model.js")(sequelize, Sequelize);
 db.place = require("../models/place.model.js")(sequelize, Sequelize);
+db.medicalFacility = require("../models/medicalFacility.model.js")(
+  sequelize,
+  Sequelize
+);
 db.userGroupRole = require("../models/userGroupRole.model.js")(
   sequelize,
   Sequelize
@@ -46,45 +50,45 @@ db.medicalFacilityGroup = require("../models/medicalFacilityGroup.model.js")(
 db.userGroup.hasMany(db.user);
 db.user.belongsTo(db.userGroup);
 
-// province - user
-db.province.hasMany(db.user);
-db.user.belongsTo(db.province);
-
-// district - user
-db.district.hasMany(db.user);
-db.user.belongsTo(db.district);
-
 // district - province
 db.province.hasMany(db.district);
 db.district.belongsTo(db.province);
+// ward - district
+db.district.hasMany(db.ward);
+db.ward.belongsTo(db.district);
+// ward - province
+db.province.hasMany(db.ward);
+db.ward.belongsTo(db.province);
 
+// province - user
+db.province.hasMany(db.user);
+db.user.belongsTo(db.province);
+// district - user
+db.district.hasMany(db.user);
+db.user.belongsTo(db.district);
 // ward - user
 db.ward.hasMany(db.user);
 db.user.belongsTo(db.ward);
 
+// province - medicalFacility
+db.province.hasMany(db.medicalFacility);
+db.medicalFacility.belongsTo(db.province);
+// district - medicalFacility
+db.district.hasMany(db.medicalFacility);
+db.medicalFacility.belongsTo(db.district);
+// ward - medicalFacility
+db.ward.hasMany(db.medicalFacility);
+db.medicalFacility.belongsTo(db.ward);
+
 // province - place
 db.province.hasMany(db.place);
 db.place.belongsTo(db.province);
-
 // district - place
 db.district.hasMany(db.place);
 db.place.belongsTo(db.district);
-
-// district - province
-db.province.hasMany(db.district);
-db.district.belongsTo(db.province);
-
 // ward - place
 db.ward.hasMany(db.place);
 db.place.belongsTo(db.ward);
-
-// ward - district
-db.district.hasMany(db.ward);
-db.ward.belongsTo(db.district);
-
-// ward - province
-db.province.hasMany(db.ward);
-db.ward.belongsTo(db.province);
 
 // userGroup - menu
 db.userGroup.belongsToMany(db.menu, { through: "userGroupRoles" });
@@ -133,6 +137,18 @@ const initialData = () => {
   db.place.create({
     id: 12345678911,
     placeName: "Nhà thuốc Trung Yên",
+    email: "haminhlong3@gmail.com",
+    mobile: "0963339657",
+    userGroupId: 12345678910,
+    provinceId: 78458965475,
+    districtId: 78454265475,
+    wardId: 78447865475,
+    address: "Thôn Đại Hạnh",
+    status: 1,
+  });
+  db.medicalFacility.create({
+    id: 12345678911,
+    medicalFacilityName: "Phòng khám Trung Yên",
     email: "haminhlong3@gmail.com",
     mobile: "0963339657",
     userGroupId: 12345678910,
@@ -278,6 +294,15 @@ const initialData = () => {
       id: 7821496253,
       menuName: "Quản lý cơ sở y tế",
       orderBy: 2,
+      url: "/health-facility",
+      icon: "",
+      parentId: 4785921450,
+      status: 1,
+    },
+    {
+      id: 9863172019,
+      menuName: "Quản lý cơ sở khám bệnh",
+      orderBy: 3,
       url: "/medical-facility",
       icon: "",
       parentId: 4785921450,
@@ -517,6 +542,22 @@ const initialData = () => {
       menuParentId: 4785921450,
       userGroupId: 12345678910,
       menuId: 7821496253,
+      isView: true,
+      isAdd: true,
+      isUpdate: true,
+      isDelete: true,
+      isBlock: true,
+      isApprove: true,
+      isReceipts: true,
+      isPrescription: true,
+      isResult: true,
+    },
+    {
+      id: 9841203650,
+      menuName: "Quản lý cơ sở khám bệnh",
+      menuParentId: 4785921450,
+      userGroupId: 12345678910,
+      menuId: 9863172019,
       isView: true,
       isAdd: true,
       isUpdate: true,

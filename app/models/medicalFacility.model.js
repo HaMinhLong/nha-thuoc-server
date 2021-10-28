@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-  const Place = sequelize.define("places", {
+  const MedicalFacility = sequelize.define("medicalFacilities", {
     id: {
       type: DataTypes.BIGINT,
       allowNull: false,
@@ -7,10 +7,10 @@ module.exports = (sequelize, DataTypes) => {
       autoIncrement: true,
       field: "id",
     },
-    placeName: {
+    medicalFacilityName: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "placeName",
+      field: "medicalFacilityName",
     },
     email: {
       type: DataTypes.STRING,
@@ -48,6 +48,6 @@ module.exports = (sequelize, DataTypes) => {
       field: "status",
     },
   });
-  Place.sync().then(async () => {});
-  return Place;
+  MedicalFacility.sync().then(async () => {});
+  return MedicalFacility;
 };
