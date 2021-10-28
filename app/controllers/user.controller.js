@@ -2,6 +2,7 @@ const db = require("../models");
 const User = db.user;
 const UserGroup = db.userGroup;
 const Config = db.config;
+const Province = db.province;
 const moment = require("moment");
 var bcrypt = require("bcryptjs");
 var nodemailer = require("nodemailer");
@@ -24,6 +25,10 @@ const getList = async (req, res) => {
         "email",
         "userGroupId",
         "mobile",
+        "provinceId",
+        "districtId",
+        "wardId",
+        "address",
         "status",
         "createdAt",
         "updatedAt",
@@ -31,10 +36,10 @@ const getList = async (req, res) => {
   const status = filters.status || "";
   const username = filters.username || "";
   const userGroupId = filters.userGroupId || "";
+  const provinceId = filters.provinceId || "";
   const fullName = filters.fullName || "";
   const email = filters.email || "";
   const mobile = filters.mobile || "";
-
   const fromDate = filters.fromDate || "2021-01-01T14:06:48.000Z";
   const toDate = filters.toDate || moment();
   const size = ranges[1] - ranges[0];
@@ -44,6 +49,7 @@ const getList = async (req, res) => {
       [Op.and]: [
         { username: { [Op.like]: "%" + username + "%" } },
         { userGroupId: { [Op.like]: "%" + userGroupId + "%" } },
+        { provinceId: { [Op.like]: "%" + provinceId + "%" } },
         { fullName: { [Op.like]: "%" + fullName + "%" } },
         { email: { [Op.like]: "%" + email + "%" } },
         { mobile: { [Op.like]: "%" + mobile + "%" } },
@@ -62,6 +68,11 @@ const getList = async (req, res) => {
         model: UserGroup,
         required: true,
         attributes: ["id", "userGroupName"],
+      },
+      {
+        model: Province,
+        required: true,
+        attributes: ["id", "provinceName"],
       },
     ],
   };
@@ -133,6 +144,10 @@ const create = async (req, res) => {
     fullName,
     email,
     mobile,
+    provinceId,
+    districtId,
+    wardId,
+    address,
     userGroupId,
     status,
   } = req.body;
@@ -144,7 +159,7 @@ const create = async (req, res) => {
   const passwordEmail =
     config && config[0] && config[0].password
       ? config[0].password
-      : "Na+89-K-2";
+      : "Naru+89-K-2";
 
   User.create({
     id:
@@ -157,6 +172,10 @@ const create = async (req, res) => {
     fullName,
     email,
     mobile,
+    provinceId,
+    districtId,
+    wardId,
+    address,
     userGroupId,
   })
     .then((user) => {
@@ -227,7 +246,7 @@ const createByXLSX = async (req, res) => {
       const passwordEmail =
         config && config[0] && config[0].password
           ? config[0].password
-          : "Na+89-K-2";
+          : "Naru+89-K-2";
 
       rows.forEach(async (row) => {
         let user = {
@@ -239,6 +258,10 @@ const createByXLSX = async (req, res) => {
           fullName: row[2],
           email: row[3],
           mobile: row[4],
+          provinceId: row[5],
+          districtId: row[6],
+          wardId: row[7],
+          address: row[8],
           userGroupId: 114427096293,
           status: -2,
         };
@@ -312,6 +335,10 @@ const updateRecord = async (req, res) => {
     fullName,
     email,
     mobile,
+    provinceId,
+    districtId,
+    wardId,
+    address,
     userGroupId,
     status,
   } = req.body;
@@ -332,6 +359,10 @@ const updateRecord = async (req, res) => {
         fullName: fullName,
         email: email,
         mobile: mobile,
+        provinceId: provinceId,
+        districtId: districtId,
+        wardId: wardId,
+        address: address,
         userGroupId: userGroupId,
       },
       {
@@ -528,7 +559,7 @@ const forgetPassword = async (req, res) => {
   const password =
     config && config[0] && config[0].password
       ? config[0].password
-      : "Na+89-K-2";
+      : "Naru+89-K-2";
 
   if (!user) {
     res.status(200).json({

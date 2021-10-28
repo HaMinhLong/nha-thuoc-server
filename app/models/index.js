@@ -24,6 +24,8 @@ db.config = require("../models/config.model.js")(sequelize, Sequelize);
 db.userGroup = require("../models/userGroup.model.js")(sequelize, Sequelize);
 db.menu = require("../models/menu.model.js")(sequelize, Sequelize);
 db.province = require("../models/province.model.js")(sequelize, Sequelize);
+db.district = require("../models/district.model.js")(sequelize, Sequelize);
+db.ward = require("../models/ward.model.js")(sequelize, Sequelize);
 db.user = require("../models/user.model.js")(sequelize, Sequelize);
 db.userGroupRole = require("../models/userGroupRole.model.js")(
   sequelize,
@@ -37,6 +39,26 @@ db.user.belongsTo(db.userGroup);
 // province - user
 db.province.hasMany(db.user);
 db.user.belongsTo(db.province);
+
+// district - user
+db.district.hasMany(db.user);
+db.user.belongsTo(db.district);
+
+// district - province
+db.province.hasMany(db.district);
+db.district.belongsTo(db.province);
+
+// ward - user
+db.ward.hasMany(db.user);
+db.user.belongsTo(db.ward);
+
+// ward - district
+db.district.hasMany(db.ward);
+db.ward.belongsTo(db.district);
+
+// ward - province
+db.province.hasMany(db.ward);
+db.ward.belongsTo(db.province);
 
 // userGroup - menu
 db.userGroup.belongsToMany(db.menu, { through: "userGroupRoles" });
@@ -54,6 +76,19 @@ const initialData = () => {
     provinceName: "Hưng Yên",
     status: 1,
   });
+  db.district.create({
+    id: 78454265475,
+    districtName: "Yên Mỹ",
+    provinceId: 78458965475,
+    status: 1,
+  });
+  db.ward.create({
+    id: 78447865475,
+    wardName: "Hoàn Long",
+    districtId: 78454265475,
+    provinceId: 78458965475,
+    status: 1,
+  });
   db.user.create({
     id: 12345678911,
     username: "admin",
@@ -63,6 +98,9 @@ const initialData = () => {
     mobile: "0963339657",
     userGroupId: 12345678910,
     provinceId: 78458965475,
+    districtId: 78454265475,
+    wardId: 78447865475,
+    address: "Thôn Đại Hạnh",
     status: 1,
   });
   db.menu.bulkCreate([
@@ -71,7 +109,7 @@ const initialData = () => {
       menuName: "Hệ thống",
       orderBy: 1,
       url: "/",
-      icon: "",
+      icon: "fas fa-cogs",
       parentId: null,
       status: 1,
     },
@@ -98,7 +136,7 @@ const initialData = () => {
       menuName: "Tài khoản - Phân quyền",
       orderBy: 2,
       url: "/",
-      icon: "",
+      icon: "fas fa-users-cog",
       parentId: null,
       status: 1,
     },

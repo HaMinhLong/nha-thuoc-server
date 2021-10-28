@@ -43,7 +43,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // database
 const db = require("./app/models");
-const Role = db.role;
 
 db.sequelize.sync();
 // force: true will drop the table if it already exists
@@ -64,6 +63,8 @@ require("./app/routes/menu.routes")(app);
 require("./app/routes/userGroupRole.routes")(app);
 require("./app/routes/config.routes")(app);
 require("./app/routes/province.routes")(app);
+require("./app/routes/district.routes")(app);
+require("./app/routes/ward.routes")(app);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;

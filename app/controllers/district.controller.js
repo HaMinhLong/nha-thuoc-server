@@ -1,4 +1,5 @@
 const db = require("../models");
+const District = db.district;
 const Province = db.province;
 const moment = require("moment");
 
@@ -11,9 +12,10 @@ const getList = async (req, res) => {
   const order = sort ? JSON.parse(sort) : ["createdAt", "DESC"];
   const attributesQuery = attributes
     ? attributes.split(",")
-    : ["id", "provinceName", "status", "createdAt", "updatedAt"];
+    : ["id", "districtName", "provinceId", "status", "createdAt", "updatedAt"];
   const status = filters.status || "";
-  const provinceName = filters.provinceName || "";
+  const districtName = filters.districtName || "";
+  const provinceId = filters.provinceId || "";
   const fromDate = filters.fromDate || "2021-01-01T14:06:48.000Z";
   const toDate = filters.toDate || moment();
   const size = ranges[1] - ranges[0];
@@ -23,7 +25,8 @@ const getList = async (req, res) => {
     where: {
       [Op.and]: [
         { status: { [Op.like]: "%" + status + "%" } },
-        { provinceName: { [Op.like]: "%" + provinceName + "%" } },
+        { districtName: { [Op.like]: "%" + districtName + "%" } },
+        { provinceId: { [Op.like]: "%" + provinceId + "%" } },
       ],
       createdAt: {
         [Op.between]: [fromDate, toDate],
@@ -33,9 +36,16 @@ const getList = async (req, res) => {
     attributes: attributesQuery,
     offset: ranges[0],
     limit: size,
+    include: [
+      {
+        model: Province,
+        required: true,
+        attributes: ["id", "provinceName"],
+      },
+    ],
   };
 
-  Province.findAndCountAll(options)
+  District.findAndCountAll(options)
     .then((result) => {
       res.status(200).json({
         results: {
@@ -62,15 +72,15 @@ const getList = async (req, res) => {
 
 const getOne = async (req, res) => {
   const { id } = req.params;
-  Province.findOne({
+  District.findOne({
     where: {
       id: id,
     },
   })
-    .then((province) => {
+    .then((district) => {
       res.status(200).json({
         results: {
-          list: province,
+          list: district,
           pagination: [],
         },
         success: true,
@@ -82,69 +92,71 @@ const getOne = async (req, res) => {
       res.status(200).json({
         success: true,
         error: err.message,
-        message: "Xảy ra lỗi khi lấy thông tin tỉnh/thành phố!",
+        message: "Xảy ra lỗi khi lấy thông tin quận/huyện!",
       });
     });
 };
 
 const create = async (req, res) => {
-  const { id, provinceName, status } = req.body;
-  const province = await Province.findOne({
-    where: { provinceName: provinceName },
+  const { id, districtName, provinceId, status } = req.body;
+  const district = await District.findOne({
+    where: { districtName: districtName },
   });
 
-  if (province) {
+  if (district) {
     res.status(200).json({
       success: false,
-      error: "Tỉnh/thành phố đã tồn tại!",
-      message: "Tỉnh/thành phố đã tồn tại!",
+      error: "Quận/Huyện đã tồn tại!",
+      message: "Quận/Huyện đã tồn tại!",
     });
   } else {
-    Province.create({
+    District.create({
       id:
         id ||
         Math.floor(Math.random() * (100000000000 - 1000000000 + 1)) +
           100000000000,
-      provinceName,
+      districtName,
+      provinceId,
       status,
     })
-      .then((province) => {
+      .then((district) => {
         res.status(200).json({
           results: {
-            list: province,
+            list: district,
             pagination: [],
           },
           success: true,
           error: "",
-          message: "Tạo mới tỉnh/thành phố thành công!",
+          message: "Tạo mới quận/huyện thành công!",
         });
       })
       .catch((err) => {
         res.status(200).json({
           success: false,
           error: err.message,
-          message: "Xảy ra lỗi khi tạo mới tỉnh/thành phố!",
+          message: "Xảy ra lỗi khi tạo mới quận/huyện!",
         });
       });
   }
 };
 const updateRecord = async (req, res) => {
   const { id } = req.params;
-  const { provinceName, provinceNameOld, status } = req.body;
-  const province = await Province.findOne({
-    where: { provinceName: provinceName },
+  const { districtName, provinceId, districtNameOld, status } = req.body;
+  const district = await District.findOne({
+    where: { districtName: districtName },
   });
-  if (province && provinceNameOld !== provinceName) {
+  if (district && districtNameOld !== districtName) {
     res.status(200).json({
       success: false,
-      error: "Tỉnh/thành phố đã tồn tại!",
-      message: "Tỉnh/thành phố đã tồn tại!",
+      error: "Quận/Huyện đã tồn tại!",
+      message: "Quận/Huyện đã tồn tại!",
     });
   } else {
-    Province.update(
+    District.update(
       {
         status: status,
-        provinceName: provinceName,
+        districtName: districtName,
+        provinceId: provinceId,
       },
       {
         where: {
@@ -152,22 +164,22 @@ const updateRecord = async (req, res) => {
         },
       }
     )
-      .then((province) => {
+      .then((district) => {
         res.status(200).json({
           results: {
-            list: province,
+            list: district,
             pagination: [],
           },
           success: true,
           error: "",
-          message: "Cập nhật tỉnh/thành phố thành công!",
+          message: "Cập nhật quận/huyện thành công!",
         });
       })
       .catch((err) => {
         res.status(200).json({
           success: false,
           error: err.message,
-          message: "Xảy ra lỗi khi cập nhật tỉnh/thành phố!",
+          message: "Xảy ra lỗi khi cập nhật quận/huyện!",
         });
       });
   }
@@ -175,7 +187,7 @@ const updateRecord = async (req, res) => {
 const updateStatus = async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
-  Province.update(
+  District.update(
     { status: status },
     {
       where: {
@@ -183,10 +195,10 @@ const updateStatus = async (req, res) => {
       },
     }
   )
-    .then((province) => {
+    .then((district) => {
       res.status(200).json({
         results: {
-          list: province,
+          list: district,
           pagination: [],
         },
         success: true,
@@ -205,27 +217,27 @@ const updateStatus = async (req, res) => {
 
 const deleteRecord = async (req, res) => {
   const { id } = req.params;
-  Province.destroy({
+  District.destroy({
     where: {
       id: id,
     },
   })
-    .then((province) => {
+    .then((district) => {
       res.status(200).json({
         results: {
-          list: province,
+          list: district,
           pagination: [],
         },
         success: true,
         error: "",
-        message: "Xóa tỉnh/thành phố thành công!",
+        message: "Xóa quận/huyện thành công!",
       });
     })
     .catch((err) => {
       res.status(200).json({
         success: false,
         message: err.message,
-        message: "Xảy ra lôi khi xóa tỉnh/thành phố!",
+        message: "Xảy ra lôi khi xóa quận/huyện!",
       });
     });
 };

@@ -32,6 +32,26 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true,
       field: "mobile",
     },
+    provinceId: {
+      type: DataTypes.BIGINT,
+      allowNull: true,
+      field: "provinceId",
+    },
+    districtId: {
+      type: DataTypes.BIGINT,
+      allowNull: true,
+      field: "districtId",
+    },
+    wardId: {
+      type: DataTypes.BIGINT,
+      allowNull: true,
+      field: "wardId",
+    },
+    address: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "address",
+    },
     userGroupId: {
       type: DataTypes.BIGINT,
       allowNull: false,
