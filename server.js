@@ -65,6 +65,7 @@ require("./app/routes/config.routes")(app);
 require("./app/routes/province.routes")(app);
 require("./app/routes/district.routes")(app);
 require("./app/routes/ward.routes")(app);
+require("./app/routes/paymentMethod.routes")(app);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;
