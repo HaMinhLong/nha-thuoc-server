@@ -28,6 +28,7 @@ db.district = require("../models/district.model.js")(sequelize, Sequelize);
 db.ward = require("../models/ward.model.js")(sequelize, Sequelize);
 db.user = require("../models/user.model.js")(sequelize, Sequelize);
 db.specialist = require("../models/specialist.model.js")(sequelize, Sequelize);
+db.place = require("../models/place.model.js")(sequelize, Sequelize);
 db.userGroupRole = require("../models/userGroupRole.model.js")(
   sequelize,
   Sequelize
@@ -60,6 +61,22 @@ db.district.belongsTo(db.province);
 // ward - user
 db.ward.hasMany(db.user);
 db.user.belongsTo(db.ward);
+
+// province - place
+db.province.hasMany(db.place);
+db.place.belongsTo(db.province);
+
+// district - place
+db.district.hasMany(db.place);
+db.place.belongsTo(db.district);
+
+// district - province
+db.province.hasMany(db.district);
+db.district.belongsTo(db.province);
+
+// ward - place
+db.ward.hasMany(db.place);
+db.place.belongsTo(db.ward);
 
 // ward - district
 db.district.hasMany(db.ward);
@@ -111,6 +128,18 @@ const initialData = () => {
     wardName: "Hoàn Long",
     districtId: 78454265475,
     provinceId: 78458965475,
+    status: 1,
+  });
+  db.place.create({
+    id: 12345678911,
+    placeName: "Nhà thuốc Trung Yên",
+    email: "haminhlong3@gmail.com",
+    mobile: "0963339657",
+    userGroupId: 12345678910,
+    provinceId: 78458965475,
+    districtId: 78454265475,
+    wardId: 78447865475,
+    address: "Thôn Đại Hạnh",
     status: 1,
   });
   db.user.create({
@@ -257,8 +286,17 @@ const initialData = () => {
     {
       id: 8963247820,
       menuName: "Quản lý chuyên khoa",
-      orderBy: 3,
+      orderBy: 4,
       url: "/specialist",
+      icon: "",
+      parentId: 4785921450,
+      status: 1,
+    },
+    {
+      id: 9874523641,
+      menuName: "Quản lý địa điểm",
+      orderBy: 5,
+      url: "/place",
       icon: "",
       parentId: 4785921450,
       status: 1,
@@ -495,6 +533,22 @@ const initialData = () => {
       menuParentId: 4785921450,
       userGroupId: 12345678910,
       menuId: 8963247820,
+      isView: true,
+      isAdd: true,
+      isUpdate: true,
+      isDelete: true,
+      isBlock: true,
+      isApprove: true,
+      isReceipts: true,
+      isPrescription: true,
+      isResult: true,
+    },
+    {
+      id: 98421502685,
+      menuName: "Quản lý địa điểm",
+      menuParentId: 4785921450,
+      userGroupId: 12345678910,
+      menuId: 9874523641,
       isView: true,
       isAdd: true,
       isUpdate: true,
