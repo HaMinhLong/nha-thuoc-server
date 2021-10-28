@@ -25,9 +25,9 @@ db.userGroup = require("../models/userGroup.model.js")(sequelize, Sequelize);
 db.menu = require("../models/menu.model.js")(sequelize, Sequelize);
 db.province = require("../models/province.model.js")(sequelize, Sequelize);
 db.district = require("../models/district.model.js")(sequelize, Sequelize);
-
 db.ward = require("../models/ward.model.js")(sequelize, Sequelize);
 db.user = require("../models/user.model.js")(sequelize, Sequelize);
+db.specialist = require("../models/specialist.model.js")(sequelize, Sequelize);
 db.userGroupRole = require("../models/userGroupRole.model.js")(
   sequelize,
   Sequelize
@@ -78,6 +78,11 @@ const initialData = () => {
     id: 12345678910,
     userGroupName: "Quản trị hệ thống",
     userGroupDescriptions: "",
+    status: 1,
+  });
+  db.specialist.create({
+    id: 78458965475,
+    specialistName: "Răng hàm mặt",
     status: 1,
   });
   db.medicalFacilityGroup.create({
@@ -245,6 +250,15 @@ const initialData = () => {
       menuName: "Quản lý cơ sở y tế",
       orderBy: 2,
       url: "/medical-facility",
+      icon: "",
+      parentId: 4785921450,
+      status: 1,
+    },
+    {
+      id: 8963247820,
+      menuName: "Quản lý chuyên khoa",
+      orderBy: 3,
+      url: "/specialist",
       icon: "",
       parentId: 4785921450,
       status: 1,
@@ -465,6 +479,22 @@ const initialData = () => {
       menuParentId: 4785921450,
       userGroupId: 12345678910,
       menuId: 7821496253,
+      isView: true,
+      isAdd: true,
+      isUpdate: true,
+      isDelete: true,
+      isBlock: true,
+      isApprove: true,
+      isReceipts: true,
+      isPrescription: true,
+      isResult: true,
+    },
+    {
+      id: 4785125963,
+      menuName: "Quản lý chuyên khoa",
+      menuParentId: 4785921450,
+      userGroupId: 12345678910,
+      menuId: 8963247820,
       isView: true,
       isAdd: true,
       isUpdate: true,
