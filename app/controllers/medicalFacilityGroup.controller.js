@@ -1,5 +1,5 @@
 const db = require("../models");
-const PaymentMethod = db.paymentMethod;
+const MedicalFacilityGroup = db.medicalFacilityGroup;
 const moment = require("moment");
 
 const Op = db.Sequelize.Op;
@@ -11,9 +11,9 @@ const getList = async (req, res) => {
   const order = sort ? JSON.parse(sort) : ["createdAt", "DESC"];
   const attributesQuery = attributes
     ? attributes.split(",")
-    : ["id", "paymentMethodName", "status", "createdAt", "updatedAt"];
+    : ["id", "medicalFacilityGroupName", "status", "createdAt", "updatedAt"];
   const status = filters.status || "";
-  const paymentMethodName = filters.paymentMethodName || "";
+  const medicalFacilityGroupName = filters.medicalFacilityGroupName || "";
   const fromDate = filters.fromDate || "2021-01-01T14:06:48.000Z";
   const toDate = filters.toDate || moment();
   const size = ranges[1] - ranges[0];
@@ -23,7 +23,11 @@ const getList = async (req, res) => {
     where: {
       [Op.and]: [
         { status: { [Op.like]: "%" + status + "%" } },
-        { paymentMethodName: { [Op.like]: "%" + paymentMethodName + "%" } },
+        {
+          medicalFacilityGroupName: {
+            [Op.like]: "%" + medicalFacilityGroupName + "%",
+          },
+        },
       ],
       createdAt: {
         [Op.between]: [fromDate, toDate],
@@ -35,7 +39,7 @@ const getList = async (req, res) => {
     limit: size,
   };
 
-  PaymentMethod.findAndCountAll(options)
+  MedicalFacilityGroup.findAndCountAll(options)
     .then((result) => {
       res.status(200).json({
         results: {
@@ -62,15 +66,15 @@ const getList = async (req, res) => {
 
 const getOne = async (req, res) => {
   const { id } = req.params;
-  PaymentMethod.findOne({
+  MedicalFacilityGroup.findOne({
     where: {
       id: id,
     },
   })
-    .then((paymentMethod) => {
+    .then((medicalFacilityGroup) => {
       res.status(200).json({
         results: {
-          list: paymentMethod,
+          list: medicalFacilityGroup,
           pagination: [],
         },
         success: true,
@@ -82,69 +86,73 @@ const getOne = async (req, res) => {
       res.status(200).json({
         success: true,
         error: err.message,
-        message: "Xảy ra lỗi khi lấy thông tin phương thức thanh toán!",
+        message: "Xảy ra lỗi khi lấy thông tin nhóm cơ sở y tế!",
       });
     });
 };
 
 const create = async (req, res) => {
-  const { id, paymentMethodName, status } = req.body;
-  const paymentMethod = await PaymentMethod.findOne({
-    where: { paymentMethodName: paymentMethodName },
+  const { id, medicalFacilityGroupName, status } = req.body;
+  const medicalFacilityGroup = await MedicalFacilityGroup.findOne({
+    where: { medicalFacilityGroupName: medicalFacilityGroupName },
   });
 
-  if (paymentMethod) {
+  if (medicalFacilityGroup) {
     res.status(200).json({
       success: false,
-      error: "Phương thức thanh toán đã tồn tại!",
-      message: "Phương thức thanh toán đã tồn tại!",
+      error: "Nhóm cơ sở y tế đã tồn tại!",
+      message: "Nhóm cơ sở y tế đã tồn tại!",
     });
   } else {
-    PaymentMethod.create({
+    MedicalFacilityGroup.create({
       id:
         id ||
         Math.floor(Math.random() * (100000000000 - 1000000000 + 1)) +
           100000000000,
-      paymentMethodName,
+      medicalFacilityGroupName,
       status,
     })
-      .then((paymentMethod) => {
+      .then((medicalFacilityGroup) => {
         res.status(200).json({
           results: {
-            list: paymentMethod,
+            list: medicalFacilityGroup,
             pagination: [],
           },
           success: true,
           error: "",
-          message: "Tạo mới phương thức thanh toán thành công!",
+          message: "Tạo mới nhóm cơ sở y tế thành công!",
         });
       })
       .catch((err) => {
         res.status(200).json({
           success: false,
           error: err.message,
-          message: "Xảy ra lỗi khi tạo mới phương thức thanh toán!",
+          message: "Xảy ra lỗi khi tạo mới nhóm cơ sở y tế!",
         });
       });
   }
 };
 const updateRecord = async (req, res) => {
   const { id } = req.params;
-  const { paymentMethodName, paymentMethodNameOld, status } = req.body;
-  const paymentMethod = await PaymentMethod.findOne({
-    where: { paymentMethodName: paymentMethodName },
+  const { medicalFacilityGroupName, medicalFacilityGroupNameOld, status } =
+    req.body;
+  const medicalFacilityGroup = await MedicalFacilityGroup.findOne({
+    where: { medicalFacilityGroupName: medicalFacilityGroupName },
   });
-  if (paymentMethod && paymentMethodNameOld !== paymentMethodName) {
+  if (
+    medicalFacilityGroup &&
+    medicalFacilityGroupNameOld !== medicalFacilityGroupName
+  ) {
     res.status(200).json({
       success: false,
-      error: "Phương thức thanh toán đã tồn tại!",
-      message: "Phương thức thanh toán đã tồn tại!",
+      error: "Nhóm cơ sở y tế đã tồn tại!",
+      message: "Nhóm cơ sở y tế đã tồn tại!",
     });
   } else {
-    PaymentMethod.update(
+    MedicalFacilityGroup.update(
       {
         status: status,
-        paymentMethodName: paymentMethodName,
+        medicalFacilityGroupName: medicalFacilityGroupName,
       },
       {
         where: {
@@ -152,22 +160,22 @@ const updateRecord = async (req, res) => {
         },
       }
     )
-      .then((paymentMethod) => {
+      .then((medicalFacilityGroup) => {
         res.status(200).json({
           results: {
-            list: paymentMethod,
+            list: medicalFacilityGroup,
             pagination: [],
           },
           success: true,
           error: "",
-          message: "Cập nhật phương thức thanh toán thành công!",
+          message: "Cập nhật nhóm cơ sở y tế thành công!",
         });
       })
       .catch((err) => {
         res.status(200).json({
           success: false,
           error: err.message,
-          message: "Xảy ra lỗi khi cập nhật phương thức thanh toán!",
+          message: "Xảy ra lỗi khi cập nhật nhóm cơ sở y tế!",
         });
       });
   }
@@ -175,7 +183,7 @@ const updateRecord = async (req, res) => {
 const updateStatus = async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
-  PaymentMethod.update(
+  MedicalFacilityGroup.update(
     { status: status },
     {
       where: {
@@ -183,10 +191,10 @@ const updateStatus = async (req, res) => {
       },
     }
   )
-    .then((paymentMethod) => {
+    .then((medicalFacilityGroup) => {
       res.status(200).json({
         results: {
-          list: paymentMethod,
+          list: medicalFacilityGroup,
           pagination: [],
         },
         success: true,
@@ -205,27 +213,27 @@ const updateStatus = async (req, res) => {
 
 const deleteRecord = async (req, res) => {
   const { id } = req.params;
-  PaymentMethod.destroy({
+  MedicalFacilityGroup.destroy({
     where: {
       id: id,
     },
   })
-    .then((paymentMethod) => {
+    .then((medicalFacilityGroup) => {
       res.status(200).json({
         results: {
-          list: paymentMethod,
+          list: medicalFacilityGroup,
           pagination: [],
         },
         success: true,
         error: "",
-        message: "Xóa phương thức thanh toán thành công!",
+        message: "Xóa nhóm cơ sở y tế thành công!",
       });
     })
     .catch((err) => {
       res.status(200).json({
         success: false,
         message: err.message,
-        message: "Xảy ra lôi khi xóa phương thức thanh toán!",
+        message: "Xảy ra lôi khi xóa nhóm cơ sở y tế!",
       });
     });
 };

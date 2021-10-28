@@ -36,6 +36,10 @@ db.paymentMethod = require("../models/paymentMethod.model.js")(
   sequelize,
   Sequelize
 );
+db.medicalFacilityGroup = require("../models/medicalFacilityGroup.model.js")(
+  sequelize,
+  Sequelize
+);
 
 // userGroup - user
 db.userGroup.hasMany(db.user);
@@ -74,6 +78,11 @@ const initialData = () => {
     id: 12345678910,
     userGroupName: "Quản trị hệ thống",
     userGroupDescriptions: "",
+    status: 1,
+  });
+  db.medicalFacilityGroup.create({
+    id: 78458965475,
+    medicalFacilityGroupName: "Nhà thuốc",
     status: 1,
   });
   db.paymentMethod.create({
@@ -211,6 +220,33 @@ const initialData = () => {
       url: "/ward",
       icon: "",
       parentId: 78459841259,
+      status: 1,
+    },
+    {
+      id: 4785921450,
+      menuName: "Quản lý CSYT",
+      orderBy: 4,
+      url: "/",
+      icon: "fa fa-book-medical",
+      parentId: null,
+      status: 1,
+    },
+    {
+      id: 1903649530,
+      menuName: "Quản lý nhóm cơ sở y tế",
+      orderBy: 1,
+      url: "/medical-facility-group",
+      icon: "",
+      parentId: 4785921450,
+      status: 1,
+    },
+    {
+      id: 7821496253,
+      menuName: "Quản lý cơ sở y tế",
+      orderBy: 2,
+      url: "/medical-facility",
+      icon: "",
+      parentId: 4785921450,
       status: 1,
     },
   ]);
@@ -381,6 +417,54 @@ const initialData = () => {
       menuParentId: 78459841259,
       userGroupId: 12345678910,
       menuId: 1485236970,
+      isView: true,
+      isAdd: true,
+      isUpdate: true,
+      isDelete: true,
+      isBlock: true,
+      isApprove: true,
+      isReceipts: true,
+      isPrescription: true,
+      isResult: true,
+    },
+    {
+      id: 8745963218,
+      menuName: "Quản lý CSYT",
+      menuParentId: null,
+      userGroupId: 12345678910,
+      menuId: 4785921450,
+      isView: true,
+      isAdd: true,
+      isUpdate: true,
+      isDelete: true,
+      isBlock: true,
+      isApprove: true,
+      isReceipts: true,
+      isPrescription: true,
+      isResult: true,
+    },
+    {
+      id: 6547820153,
+      menuName: "Quản lý nhóm cơ sở y tế",
+      menuParentId: 4785921450,
+      userGroupId: 12345678910,
+      menuId: 1903649530,
+      isView: true,
+      isAdd: true,
+      isUpdate: true,
+      isDelete: true,
+      isBlock: true,
+      isApprove: true,
+      isReceipts: true,
+      isPrescription: true,
+      isResult: true,
+    },
+    {
+      id: 2015896541,
+      menuName: "Quản lý cơ sở y tế",
+      menuParentId: 4785921450,
+      userGroupId: 12345678910,
+      menuId: 7821496253,
       isView: true,
       isAdd: true,
       isUpdate: true,

@@ -137,6 +137,9 @@ const create = async (req, res) => {
             isDelete: false,
             isBlock: false,
             isApprove: false,
+            isReceipts: false,
+            isPrescription: false,
+            isResult: false,
           });
         }
         UserGroupRole.bulkCreate(menuBulkCreate);
