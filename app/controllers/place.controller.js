@@ -13,7 +13,19 @@ const getList = async (req, res) => {
   const order = sort ? JSON.parse(sort) : ["createdAt", "DESC"];
   const attributesQuery = attributes
     ? attributes.split(",")
-    : ["id", "placeName", "status", "createdAt", "updatedAt"];
+    : [
+        "id",
+        "placeName",
+        "status",
+        "email",
+        "mobile",
+        "provinceId",
+        "districtId",
+        "wardId",
+        "address",
+        "createdAt",
+        "updatedAt",
+      ];
   const status = filters.status || "";
   const placeName = filters.placeName || "";
   const provinceId = filters.provinceId || "";

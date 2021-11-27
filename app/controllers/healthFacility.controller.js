@@ -1,6 +1,9 @@
 const db = require("../models");
-const MedicalFacility = db.medicalFacility;
+const HealthFacility = db.healthFacility;
 const Province = db.province;
+const District = db.district;
+const Ward = db.ward;
+const medicalFacilityGroup = db.medicalFacilityGroup;
 
 const moment = require("moment");
 
@@ -15,9 +18,14 @@ const getList = async (req, res) => {
     ? attributes.split(",")
     : [
         "id",
-        "medicalFacilityName",
+        "healthFacilityName",
+        "healthFacilityCode",
         "email",
         "mobile",
+        "taxCode",
+        "representativeName",
+        "representativeMobile",
+        "medicalFacilityGroupId",
         "provinceId",
         "districtId",
         "wardId",
@@ -27,8 +35,13 @@ const getList = async (req, res) => {
         "updatedAt",
       ];
   const status = filters.status || "";
-  const medicalFacilityName = filters.medicalFacilityName || "";
+  const healthFacilityName = filters.healthFacilityName || "";
+  const healthFacilityCode = filters.healthFacilityCode || "";
+  const mobile = filters.mobile || "";
   const provinceId = filters.provinceId || "";
+  const districtId = filters.districtId || "";
+  const wardId = filters.wardId || "";
+  const medicalFacilityGroupId = filters.medicalFacilityGroupId || "";
   const fromDate = filters.fromDate || "2021-01-01T14:06:48.000Z";
   const toDate = filters.toDate || moment();
   const size = ranges[1] - ranges[0];
@@ -38,8 +51,17 @@ const getList = async (req, res) => {
     where: {
       [Op.and]: [
         { status: { [Op.like]: "%" + status + "%" } },
-        { medicalFacilityName: { [Op.like]: "%" + medicalFacilityName + "%" } },
+        { healthFacilityName: { [Op.like]: "%" + healthFacilityName + "%" } },
+        { healthFacilityCode: { [Op.like]: "%" + healthFacilityCode + "%" } },
+        { mobile: { [Op.like]: "%" + mobile + "%" } },
         { provinceId: { [Op.like]: "%" + provinceId + "%" } },
+        { districtId: { [Op.like]: "%" + districtId + "%" } },
+        { wardId: { [Op.like]: "%" + wardId + "%" } },
+        {
+          medicalFacilityGroupId: {
+            [Op.like]: "%" + medicalFacilityGroupId + "%",
+          },
+        },
       ],
       createdAt: {
         [Op.between]: [fromDate, toDate],
@@ -55,10 +77,25 @@ const getList = async (req, res) => {
         required: true,
         attributes: ["id", "provinceName"],
       },
+      {
+        model: District,
+        required: true,
+        attributes: ["id", "districtName"],
+      },
+      {
+        model: Ward,
+        required: true,
+        attributes: ["id", "wardName"],
+      },
+      {
+        model: medicalFacilityGroup,
+        required: true,
+        attributes: ["id", "medicalFacilityGroupName"],
+      },
     ],
   };
 
-  MedicalFacility.findAndCountAll(options)
+  HealthFacility.findAndCountAll(options)
     .then((result) => {
       res.status(200).json({
         results: {
@@ -85,15 +122,15 @@ const getList = async (req, res) => {
 
 const getOne = async (req, res) => {
   const { id } = req.params;
-  MedicalFacility.findOne({
+  HealthFacility.findOne({
     where: {
       id: id,
     },
   })
-    .then((medicalFacility) => {
+    .then((healthFacility) => {
       res.status(200).json({
         results: {
-          list: medicalFacility,
+          list: healthFacility,
           pagination: [],
         },
         success: true,
@@ -105,7 +142,7 @@ const getOne = async (req, res) => {
       res.status(200).json({
         success: true,
         error: err.message,
-        message: "Xảy ra lỗi khi lấy thông tin cơ sở khám bệnh!",
+        message: "Xảy ra lỗi khi lấy thông tin cơ sở y tế!",
       });
     });
 };
@@ -113,7 +150,12 @@ const getOne = async (req, res) => {
 const create = async (req, res) => {
   const {
     id,
-    medicalFacilityName,
+    healthFacilityName,
+    healthFacilityCode,
+    taxCode,
+    representativeName,
+    representativeMobile,
+    medicalFacilityGroupId,
     email,
     mobile,
     provinceId,
@@ -122,23 +164,28 @@ const create = async (req, res) => {
     address,
     status,
   } = req.body;
-  const medicalFacility = await MedicalFacility.findOne({
-    where: { medicalFacilityName: medicalFacilityName },
+  const healthFacility = await HealthFacility.findOne({
+    where: { healthFacilityName: healthFacilityName },
   });
 
-  if (medicalFacility) {
+  if (healthFacility) {
     res.status(200).json({
       success: false,
-      error: "Cơ sở khám bệnh đã tồn tại!",
-      message: "Cơ sở khám bệnh đã tồn tại!",
+      error: "Cơ sở y tế đã tồn tại!",
+      message: "Cơ sở y tế đã tồn tại!",
     });
   } else {
-    MedicalFacility.create({
+    HealthFacility.create({
       id:
         id ||
         Math.floor(Math.random() * (100000000000 - 1000000000 + 1)) +
           100000000000,
-      medicalFacilityName,
+      healthFacilityName,
+      healthFacilityCode,
+      taxCode,
+      representativeName,
+      representativeMobile,
+      medicalFacilityGroupId,
       email,
       mobile,
       provinceId,
@@ -147,22 +194,22 @@ const create = async (req, res) => {
       address,
       status,
     })
-      .then((medicalFacility) => {
+      .then((healthFacility) => {
         res.status(200).json({
           results: {
-            list: medicalFacility,
+            list: healthFacility,
             pagination: [],
           },
           success: true,
           error: "",
-          message: "Tạo mới cơ sở khám bệnh thành công!",
+          message: "Tạo mới cơ sở y tế thành công!",
         });
       })
       .catch((err) => {
         res.status(200).json({
           success: false,
           error: err.message,
-          message: "Xảy ra lỗi khi tạo mới cơ sở khám bệnh!",
+          message: "Xảy ra lỗi khi tạo mới cơ sở y tế!",
         });
       });
   }
@@ -170,8 +217,13 @@ const create = async (req, res) => {
 const updateRecord = async (req, res) => {
   const { id } = req.params;
   const {
-    medicalFacilityName,
-    medicalFacilityNameOld,
+    healthFacilityName,
+    healthFacilityNameOld,
+    healthFacilityCode,
+    taxCode,
+    representativeName,
+    representativeMobile,
+    medicalFacilityGroupId,
     email,
     mobile,
     provinceId,
@@ -180,19 +232,24 @@ const updateRecord = async (req, res) => {
     address,
     status,
   } = req.body;
-  const medicalFacility = await MedicalFacility.findOne({
-    where: { medicalFacilityName: medicalFacilityName },
+  const healthFacility = await HealthFacility.findOne({
+    where: { healthFacilityName: healthFacilityName },
   });
-  if (medicalFacility && medicalFacilityNameOld !== medicalFacilityName) {
+  if (healthFacility && healthFacilityNameOld !== healthFacilityName) {
     res.status(200).json({
       success: false,
-      error: "Cơ sở khám bệnh đã tồn tại!",
-      message: "Cơ sở khám bệnh đã tồn tại!",
+      error: "Cơ sở y tế đã tồn tại!",
+      message: "Cơ sở y tế đã tồn tại!",
     });
   } else {
-    MedicalFacility.update(
+    HealthFacility.update(
       {
-        medicalFacilityName: medicalFacilityName,
+        healthFacilityName: healthFacilityName,
+        healthFacilityCode: healthFacilityCode,
+        taxCode: taxCode,
+        representativeName: representativeName,
+        representativeMobile: representativeMobile,
+        medicalFacilityGroupId: medicalFacilityGroupId,
         email: email,
         mobile: mobile,
         provinceId: provinceId,
@@ -207,22 +264,22 @@ const updateRecord = async (req, res) => {
         },
       }
     )
-      .then((medicalFacility) => {
+      .then((healthFacility) => {
         res.status(200).json({
           results: {
-            list: medicalFacility,
+            list: healthFacility,
             pagination: [],
           },
           success: true,
           error: "",
-          message: "Cập nhật cơ sở khám bệnh thành công!",
+          message: "Cập nhật cơ sở y tế thành công!",
         });
       })
       .catch((err) => {
         res.status(200).json({
           success: false,
           error: err.message,
-          message: "Xảy ra lỗi khi cập nhật cơ sở khám bệnh!",
+          message: "Xảy ra lỗi khi cập nhật cơ sở y tế!",
         });
       });
   }
@@ -230,7 +287,7 @@ const updateRecord = async (req, res) => {
 const updateStatus = async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
-  MedicalFacility.update(
+  HealthFacility.update(
     { status: status },
     {
       where: {
@@ -238,10 +295,10 @@ const updateStatus = async (req, res) => {
       },
     }
   )
-    .then((medicalFacility) => {
+    .then((healthFacility) => {
       res.status(200).json({
         results: {
-          list: medicalFacility,
+          list: healthFacility,
           pagination: [],
         },
         success: true,
@@ -260,27 +317,27 @@ const updateStatus = async (req, res) => {
 
 const deleteRecord = async (req, res) => {
   const { id } = req.params;
-  MedicalFacility.destroy({
+  HealthFacility.destroy({
     where: {
       id: id,
     },
   })
-    .then((medicalFacility) => {
+    .then((healthFacility) => {
       res.status(200).json({
         results: {
-          list: medicalFacility,
+          list: healthFacility,
           pagination: [],
         },
         success: true,
         error: "",
-        message: "Xóa cơ sở khám bệnh thành công!",
+        message: "Xóa cơ sở y tế thành công!",
       });
     })
     .catch((err) => {
       res.status(200).json({
         success: false,
         message: err.message,
-        message: "Xảy ra lôi khi xóa cơ sở khám bệnh!",
+        message: "Xảy ra lôi khi xóa cơ sở y tế!",
       });
     });
 };

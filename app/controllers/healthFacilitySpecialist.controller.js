@@ -1,5 +1,8 @@
 const db = require("../models");
+const HealthFacilitySpecialist = db.healthFacilitySpecialist;
+const HealthFacility = db.healthFacility;
 const Specialist = db.specialist;
+
 const moment = require("moment");
 
 const Op = db.Sequelize.Op;
@@ -9,30 +12,33 @@ const getList = async (req, res) => {
   const filters = filter ? JSON.parse(filter) : {};
   const ranges = range ? JSON.parse(range) : [0, 20];
   const order = sort ? JSON.parse(sort) : ["createdAt", "DESC"];
-  const attributesQuery = attributes
-    ? attributes.split(",")
-    : ["id", "specialistName", "status", "createdAt", "updatedAt"];
-  const status = filters.status || "";
-  const specialistName = filters.specialistName || "";
+  const healthFacilityId = filters.healthFacilityId || "";
   const fromDate = filters.fromDate || "2021-01-01T14:06:48.000Z";
   const toDate = filters.toDate || moment();
   const size = ranges[1] - ranges[0];
   const current = Math.floor(ranges[1] / size);
-
-  var options = {
+  const options = {
     where: {
-      [Op.and]: [
-        { status: { [Op.like]: "%" + status + "%" } },
-        { specialistName: { [Op.like]: "%" + specialistName + "%" } },
-      ],
       createdAt: {
         [Op.between]: [fromDate, toDate],
       },
     },
     order: [order],
-    attributes: attributesQuery,
     offset: ranges[0],
     limit: size,
+    include: [
+      {
+        model: HealthFacility,
+        required: true,
+        attributes: ["id", "healthFacilityName"],
+        through: {
+          where: {
+            healthFacilityId: { [Op.like]: "%" + healthFacilityId + "%" },
+          },
+          attributes: ["healthFacilityId", "specialistId"],
+        },
+      },
+    ],
   };
 
   Specialist.findAndCountAll(options)
@@ -62,15 +68,15 @@ const getList = async (req, res) => {
 
 const getOne = async (req, res) => {
   const { id } = req.params;
-  Specialist.findOne({
+  HealthFacilitySpecialist.findOne({
     where: {
       id: id,
     },
   })
-    .then((specialist) => {
+    .then((healthFacilitySpecialist) => {
       res.status(200).json({
         results: {
-          list: specialist,
+          list: healthFacilitySpecialist,
           pagination: [],
         },
         success: true,
@@ -88,132 +94,142 @@ const getOne = async (req, res) => {
 };
 
 const create = async (req, res) => {
-  const { id, specialistName, status } = req.body;
-  const specialist = await Specialist.findOne({
-    where: { specialistName: specialistName },
+  const { id, healthFacilityId, specialistId } = req.body;
+  const healthFacilitySpecialist = await HealthFacilitySpecialist.findOne({
+    where: {
+      [Op.and]: [
+        { healthFacilityId: healthFacilityId },
+        { specialistId: specialistId },
+      ],
+    },
   });
 
-  if (specialist) {
+  if (healthFacilitySpecialist) {
     res.status(200).json({
       success: false,
       error: "Chuyên khoa đã tồn tại!",
       message: "Chuyên khoa đã tồn tại!",
     });
   } else {
-    Specialist.create({
+    HealthFacilitySpecialist.create({
       id:
         id ||
         Math.floor(Math.random() * (100000000000 - 1000000000 + 1)) +
           100000000000,
-      specialistName,
-      status,
+      healthFacilityId,
+      specialistId,
     })
-      .then((specialist) => {
+      .then((healthFacilitySpecialist) => {
         res.status(200).json({
           results: {
-            list: specialist,
+            list: healthFacilitySpecialist,
             pagination: [],
           },
           success: true,
           error: "",
-          message: "Tạo mới chuyên khoa thành công!",
+          message: "Thêm mới chuyên khoa thành công!",
         });
       })
       .catch((err) => {
         res.status(200).json({
           success: false,
           error: err.message,
-          message: "Xảy ra lỗi khi tạo mới chuyên khoa!",
+          message: "Xảy ra lỗi khi thêm mới chuyên khoa!",
         });
       });
+  }
+};
+
+const bulkCreate = async (req, res) => {
+  const healthFacilitySpecialists = req.body;
+  let err = false;
+  let errMessage = "";
+  for (let index = 0; index < healthFacilitySpecialists.length; index++) {
+    const healthFacilitySpecialist = await HealthFacilitySpecialist.findOne({
+      where: {
+        [Op.and]: [
+          {
+            healthFacilityId: healthFacilitySpecialists[index].healthFacilityId,
+          },
+          { specialistId: healthFacilitySpecialists[index].specialistId },
+        ],
+      },
+    });
+    if (!healthFacilitySpecialist) {
+      HealthFacilitySpecialist.create({
+        id:
+          Math.floor(Math.random() * (100000000000 - 1000000000 + 1)) +
+          100000000000,
+        healthFacilityId: healthFacilitySpecialists[index].healthFacilityId,
+        specialistId: healthFacilitySpecialists[index].specialistId,
+      })
+        .then((healthFacilitySpecialist) => {})
+        .catch((err) => {
+          err = true;
+          errMessage: err.message;
+        });
+    }
+  }
+  if (err) {
+    res.status(200).json({
+      success: false,
+      error: errMessage,
+      message: "Xảy ra lỗi khi thêm mới chuyên khoa thành công!",
+    });
+  } else {
+    res.status(200).json({
+      success: true,
+      error: "",
+      message: "Thêm mới chuyên khoa thành công!",
+    });
   }
 };
 const updateRecord = async (req, res) => {
   const { id } = req.params;
-  const { specialistName, specialistNameOld, status } = req.body;
-  const specialist = await Specialist.findOne({
-    where: { specialistName: specialistName },
-  });
-  if (specialist && specialistNameOld !== specialistName) {
-    res.status(200).json({
-      success: false,
-      error: "Chuyên khoa đã tồn tại!",
-      message: "Chuyên khoa đã tồn tại!",
-    });
-  } else {
-    Specialist.update(
-      {
-        status: status,
-        specialistName: specialistName,
-      },
-      {
-        where: {
-          id: id,
-        },
-      }
-    )
-      .then((specialist) => {
-        res.status(200).json({
-          results: {
-            list: specialist,
-            pagination: [],
-          },
-          success: true,
-          error: "",
-          message: "Cập nhật chuyên khoa thành công!",
-        });
-      })
-      .catch((err) => {
-        res.status(200).json({
-          success: false,
-          error: err.message,
-          message: "Xảy ra lỗi khi cập nhật chuyên khoa!",
-        });
-      });
-  }
-};
-const updateStatus = async (req, res) => {
-  const { id } = req.params;
-  const { status } = req.body;
-  Specialist.update(
-    { status: status },
+  const { healthFacilityId, specialistId } = req.body;
+
+  HealthFacilitySpecialist.update(
+    {
+      healthFacilityId: healthFacilityId,
+      specialistId: specialistId,
+    },
     {
       where: {
         id: id,
       },
     }
   )
-    .then((specialist) => {
+    .then((healthFacilitySpecialist) => {
       res.status(200).json({
         results: {
-          list: specialist,
+          list: healthFacilitySpecialist,
           pagination: [],
         },
         success: true,
         error: "",
-        message: "Cập nhật trạng thái thành công!",
+        message: "Cập nhật chuyên khoa thành công!",
       });
     })
     .catch((err) => {
       res.status(200).json({
         success: false,
         error: err.message,
-        message: "Xảy ra lỗi khi cập nhật trạng thái",
+        message: "Xảy ra lỗi khi cập nhật chuyên khoa!",
       });
     });
 };
 
 const deleteRecord = async (req, res) => {
   const { id } = req.params;
-  Specialist.destroy({
+  HealthFacilitySpecialist.destroy({
     where: {
       id: id,
     },
   })
-    .then((specialist) => {
+    .then((healthFacilitySpecialist) => {
       res.status(200).json({
         results: {
-          list: specialist,
+          list: healthFacilitySpecialist,
           pagination: [],
         },
         success: true,
@@ -233,7 +249,7 @@ module.exports = {
   getList,
   getOne,
   create,
+  bulkCreate,
   updateRecord,
-  updateStatus,
   deleteRecord,
 };

@@ -29,6 +29,10 @@ db.ward = require("../models/ward.model.js")(sequelize, Sequelize);
 db.user = require("../models/user.model.js")(sequelize, Sequelize);
 db.specialist = require("../models/specialist.model.js")(sequelize, Sequelize);
 db.place = require("../models/place.model.js")(sequelize, Sequelize);
+db.healthFacility = require("../models/healthFacility.model.js")(
+  sequelize,
+  Sequelize
+);
 db.medicalFacility = require("../models/medicalFacility.model.js")(
   sequelize,
   Sequelize
@@ -45,10 +49,25 @@ db.medicalFacilityGroup = require("../models/medicalFacilityGroup.model.js")(
   sequelize,
   Sequelize
 );
+db.healthFacilitySpecialist =
+  require("../models/healthFacilitySpecialist.model.js")(sequelize, Sequelize);
 
 // userGroup - user
 db.userGroup.hasMany(db.user);
 db.user.belongsTo(db.userGroup);
+// healthFacility - user
+db.healthFacility.hasMany(db.user);
+db.user.belongsTo(db.healthFacility);
+// medicalFacilityGroup - healthFacility
+db.medicalFacilityGroup.hasMany(db.healthFacility);
+db.healthFacility.belongsTo(db.medicalFacilityGroup);
+// healthFacility - specialist
+db.healthFacility.belongsToMany(db.specialist, {
+  through: "healthFacilitySpecialists",
+});
+db.specialist.belongsToMany(db.healthFacility, {
+  through: "healthFacilitySpecialists",
+});
 
 // district - province
 db.province.hasMany(db.district);
@@ -69,6 +88,16 @@ db.user.belongsTo(db.district);
 // ward - user
 db.ward.hasMany(db.user);
 db.user.belongsTo(db.ward);
+
+// province - healthFacility
+db.province.hasMany(db.healthFacility);
+db.healthFacility.belongsTo(db.province);
+// district - healthFacility
+db.district.hasMany(db.healthFacility);
+db.healthFacility.belongsTo(db.district);
+// ward - healthFacility
+db.ward.hasMany(db.healthFacility);
+db.healthFacility.belongsTo(db.ward);
 
 // province - medicalFacility
 db.province.hasMany(db.medicalFacility);
@@ -158,6 +187,27 @@ const initialData = () => {
     address: "Thôn Đại Hạnh",
     status: 1,
   });
+  db.healthFacility.create({
+    id: 12345678911,
+    healthFacilityName: "Phòng khám Đa khoa Minh Đức",
+    healthFacilityCode: "DKMD",
+    taxCode: "123456789",
+    representativeName: "Hà Minh Long",
+    representativeMobile: "0963339657",
+    medicalFacilityGroupId: 78458965475,
+    email: "haminhlong3@gmail.com",
+    mobile: "0963339657",
+    provinceId: 78458965475,
+    districtId: 78454265475,
+    wardId: 78447865475,
+    address: "Thôn Đại Hạnh",
+    status: 1,
+  });
+  db.healthFacilitySpecialist.create({
+    id: 58458965475,
+    healthFacilityId: 12345678911,
+    specialistId: 78458965475,
+  });
   db.user.create({
     id: 12345678911,
     username: "admin",
@@ -170,6 +220,7 @@ const initialData = () => {
     districtId: 78454265475,
     wardId: 78447865475,
     address: "Thôn Đại Hạnh",
+    healthFacilityId: 12345678911,
     status: 1,
   });
   db.menu.bulkCreate([
@@ -603,6 +654,6 @@ const initialData = () => {
   ]);
 };
 
-initialData();
+// initialData();
 
 module.exports = db;
