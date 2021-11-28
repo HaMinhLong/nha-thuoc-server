@@ -1,7 +1,7 @@
 const db = require("../models");
-const HealthFacilitySpecialist = db.healthFacilitySpecialist;
+const HealthFacilityUser = db.healthFacilityUser;
 const HealthFacility = db.healthFacility;
-const Specialist = db.specialist;
+const User = db.user;
 
 const moment = require("moment");
 
@@ -12,7 +12,7 @@ const getList = async (req, res) => {
   const filters = filter ? JSON.parse(filter) : {};
   const ranges = range ? JSON.parse(range) : [0, 20];
   const order = sort ? JSON.parse(sort) : ["createdAt", "DESC"];
-  const healthFacilityId = filters.healthFacilityId || "";
+  const userId = filters.userId || "";
   const fromDate = filters.fromDate || "2021-01-01T14:06:48.000Z";
   const toDate = filters.toDate || moment();
   const size = ranges[1] - ranges[0];
@@ -26,22 +26,23 @@ const getList = async (req, res) => {
     order: [order],
     offset: ranges[0],
     limit: size,
+    attributes: ["id", "healthFacilityName", "createdAt"],
     include: [
       {
-        model: HealthFacility,
+        model: User,
         required: true,
-        attributes: ["id", "healthFacilityName"],
+        attributes: ["id", "username"],
         through: {
           where: {
-            healthFacilityId: { [Op.like]: "%" + healthFacilityId + "%" },
+            userId: { [Op.like]: "%" + userId + "%" },
           },
-          attributes: ["id", "healthFacilityId", "specialistId"],
+          attributes: ["id", "healthFacilityId", "userId"],
         },
       },
     ],
   };
 
-  Specialist.findAndCountAll(options)
+  HealthFacility.findAndCountAll(options)
     .then((result) => {
       res.status(200).json({
         results: {
@@ -68,15 +69,15 @@ const getList = async (req, res) => {
 
 const getOne = async (req, res) => {
   const { id } = req.params;
-  HealthFacilitySpecialist.findOne({
+  HealthFacilityUser.findOne({
     where: {
       id: id,
     },
   })
-    .then((healthFacilitySpecialist) => {
+    .then((healthFacilityUser) => {
       res.status(200).json({
         results: {
-          list: healthFacilitySpecialist,
+          list: healthFacilityUser,
           pagination: [],
         },
         success: true,
@@ -88,82 +89,79 @@ const getOne = async (req, res) => {
       res.status(200).json({
         success: true,
         error: err.message,
-        message: "Xảy ra lỗi khi lấy thông tin chuyên khoa!",
+        message: "Xảy ra lỗi khi lấy thông tin CSYT!",
       });
     });
 };
 
 const create = async (req, res) => {
-  const { id, healthFacilityId, specialistId } = req.body;
-  const healthFacilitySpecialist = await HealthFacilitySpecialist.findOne({
+  const { id, healthFacilityId, userId } = req.body;
+  const healthFacilityUser = await HealthFacilityUser.findOne({
     where: {
-      [Op.and]: [
-        { healthFacilityId: healthFacilityId },
-        { specialistId: specialistId },
-      ],
+      [Op.and]: [{ healthFacilityId: healthFacilityId }, { userId: userId }],
     },
   });
 
-  if (healthFacilitySpecialist) {
+  if (healthFacilityUser) {
     res.status(200).json({
       success: false,
-      error: "Chuyên khoa đã tồn tại!",
-      message: "Chuyên khoa đã tồn tại!",
+      error: "CSYT đã tồn tại!",
+      message: "CSYT đã tồn tại!",
     });
   } else {
-    HealthFacilitySpecialist.create({
+    HealthFacilityUser.create({
       id:
         id ||
         Math.floor(Math.random() * (100000000000 - 1000000000 + 1)) +
           100000000000,
       healthFacilityId,
-      specialistId,
+      userId,
     })
-      .then((healthFacilitySpecialist) => {
+      .then((healthFacilityUser) => {
         res.status(200).json({
           results: {
-            list: healthFacilitySpecialist,
+            list: healthFacilityUser,
             pagination: [],
           },
           success: true,
           error: "",
-          message: "Thêm mới chuyên khoa thành công!",
+          message: "Thiết lập CSYT thành công!",
         });
       })
       .catch((err) => {
         res.status(200).json({
           success: false,
           error: err.message,
-          message: "Xảy ra lỗi khi thêm mới chuyên khoa!",
+          message: "Xảy ra lỗi khi thiết lập CSYT!",
         });
       });
   }
 };
 
 const bulkCreate = async (req, res) => {
-  const healthFacilitySpecialists = req.body;
+  const healthFacilityUsers = req.body;
   let err = false;
   let errMessage = "";
-  for (let index = 0; index < healthFacilitySpecialists.length; index++) {
-    const healthFacilitySpecialist = await HealthFacilitySpecialist.findOne({
+  for (let index = 0; index < healthFacilityUsers.length; index++) {
+    const healthFacilityUser = await HealthFacilityUser.findOne({
       where: {
         [Op.and]: [
           {
-            healthFacilityId: healthFacilitySpecialists[index].healthFacilityId,
+            healthFacilityId: healthFacilityUsers[index].healthFacilityId,
           },
-          { specialistId: healthFacilitySpecialists[index].specialistId },
+          { userId: healthFacilityUsers[index].userId },
         ],
       },
     });
-    if (!healthFacilitySpecialist) {
-      HealthFacilitySpecialist.create({
+    if (!healthFacilityUser) {
+      HealthFacilityUser.create({
         id:
           Math.floor(Math.random() * (100000000000 - 1000000000 + 1)) +
           100000000000,
-        healthFacilityId: healthFacilitySpecialists[index].healthFacilityId,
-        specialistId: healthFacilitySpecialists[index].specialistId,
+        healthFacilityId: healthFacilityUsers[index].healthFacilityId,
+        userId: healthFacilityUsers[index].userId,
       })
-        .then((healthFacilitySpecialist) => {})
+        .then((healthFacilityUser) => {})
         .catch((err) => {
           err = true;
           errMessage: err.message;
@@ -174,24 +172,24 @@ const bulkCreate = async (req, res) => {
     res.status(200).json({
       success: false,
       error: errMessage,
-      message: "Xảy ra lỗi khi thêm mới chuyên khoa thành công!",
+      message: "Xảy ra lỗi khi thiết lập CSYT thành công!",
     });
   } else {
     res.status(200).json({
       success: true,
       error: "",
-      message: "Thêm mới chuyên khoa thành công!",
+      message: "Thiết lập CSYT thành công!",
     });
   }
 };
 const updateRecord = async (req, res) => {
   const { id } = req.params;
-  const { healthFacilityId, specialistId } = req.body;
+  const { healthFacilityId, userId } = req.body;
 
-  HealthFacilitySpecialist.update(
+  HealthFacilityUser.update(
     {
       healthFacilityId: healthFacilityId,
-      specialistId: specialistId,
+      userId: userId,
     },
     {
       where: {
@@ -199,49 +197,49 @@ const updateRecord = async (req, res) => {
       },
     }
   )
-    .then((healthFacilitySpecialist) => {
+    .then((healthFacilityUser) => {
       res.status(200).json({
         results: {
-          list: healthFacilitySpecialist,
+          list: healthFacilityUser,
           pagination: [],
         },
         success: true,
         error: "",
-        message: "Cập nhật chuyên khoa thành công!",
+        message: "Cập nhật CSYT thành công!",
       });
     })
     .catch((err) => {
       res.status(200).json({
         success: false,
         error: err.message,
-        message: "Xảy ra lỗi khi cập nhật chuyên khoa!",
+        message: "Xảy ra lỗi khi cập nhật CSYT!",
       });
     });
 };
 
 const deleteRecord = async (req, res) => {
   const { id } = req.params;
-  HealthFacilitySpecialist.destroy({
+  HealthFacilityUser.destroy({
     where: {
       id: id,
     },
   })
-    .then((healthFacilitySpecialist) => {
+    .then((healthFacilityUser) => {
       res.status(200).json({
         results: {
-          list: healthFacilitySpecialist,
+          list: healthFacilityUser,
           pagination: [],
         },
         success: true,
         error: "",
-        message: "Xóa chuyên khoa thành công!",
+        message: "Xóa CSYT thành công!",
       });
     })
     .catch((err) => {
       res.status(200).json({
         success: false,
         message: err.message,
-        message: "Xảy ra lôi khi xóa chuyên khoa!",
+        message: "Xảy ra lôi khi xóa CSYT!",
       });
     });
 };

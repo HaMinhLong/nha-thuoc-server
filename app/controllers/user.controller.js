@@ -29,7 +29,6 @@ const getList = async (req, res) => {
         "districtId",
         "wardId",
         "address",
-        "healthFacilityId",
         "status",
         "createdAt",
         "updatedAt",
@@ -150,7 +149,6 @@ const create = async (req, res) => {
     wardId,
     address,
     userGroupId,
-    healthFacilityId,
     status,
   } = req.body;
   const config = await Config.findAll({});
@@ -179,7 +177,6 @@ const create = async (req, res) => {
     wardId,
     address,
     userGroupId,
-    healthFacilityId,
   })
     .then((user) => {
       var transporter = nodemailer.createTransport(
@@ -343,7 +340,6 @@ const updateRecord = async (req, res) => {
     wardId,
     address,
     userGroupId,
-    healthFacilityId,
     status,
   } = req.body;
   const user = await User.findOne({
@@ -368,7 +364,6 @@ const updateRecord = async (req, res) => {
         wardId: wardId,
         address: address,
         userGroupId: userGroupId,
-        healthFacilityId: healthFacilityId,
       },
       {
         where: {

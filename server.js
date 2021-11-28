@@ -72,6 +72,7 @@ require("./app/routes/place.routes")(app);
 require("./app/routes/medicalFacility.routes")(app);
 require("./app/routes/healthFacility.routes")(app);
 require("./app/routes/healthFacilitySpecialist.routes")(app);
+require("./app/routes/healthFacilityUser.routes")(app);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;

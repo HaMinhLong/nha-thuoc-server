@@ -51,13 +51,22 @@ db.medicalFacilityGroup = require("../models/medicalFacilityGroup.model.js")(
 );
 db.healthFacilitySpecialist =
   require("../models/healthFacilitySpecialist.model.js")(sequelize, Sequelize);
+db.healthFacilityUser = require("../models/healthFacilityUser.model")(
+  sequelize,
+  Sequelize
+);
 
 // userGroup - user
 db.userGroup.hasMany(db.user);
 db.user.belongsTo(db.userGroup);
+
 // healthFacility - user
-db.healthFacility.hasMany(db.user);
-db.user.belongsTo(db.healthFacility);
+db.healthFacility.belongsToMany(db.user, {
+  through: "healthFacilityUsers",
+});
+db.user.belongsToMany(db.healthFacility, {
+  through: "healthFacilityUsers",
+});
 // medicalFacilityGroup - healthFacility
 db.medicalFacilityGroup.hasMany(db.healthFacility);
 db.healthFacility.belongsTo(db.medicalFacilityGroup);
@@ -222,6 +231,11 @@ const initialData = () => {
     address: "Thôn Đại Hạnh",
     healthFacilityId: 12345678911,
     status: 1,
+  });
+  db.healthFacilityUser.create({
+    id: 58458965475,
+    healthFacilityId: 12345678911,
+    userId: 12345678911,
   });
   db.menu.bulkCreate([
     {
