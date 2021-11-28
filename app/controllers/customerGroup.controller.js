@@ -1,5 +1,5 @@
 const db = require("../models");
-const SupplierGroup = db.supplierGroup;
+const CustomerGroup = db.customerGroup;
 const moment = require("moment");
 
 const Op = db.Sequelize.Op;
@@ -13,14 +13,14 @@ const getList = async (req, res) => {
     ? attributes.split(",")
     : [
         "id",
-        "supplierGroupName",
+        "customerGroupName",
         "healthFacilityId",
         "status",
         "createdAt",
         "updatedAt",
       ];
   const status = filters.status || "";
-  const supplierGroupName = filters.supplierGroupName || "";
+  const customerGroupName = filters.customerGroupName || "";
   const healthFacilityId = filters.healthFacilityId || "";
   const fromDate = filters.fromDate || "2021-01-01T14:06:48.000Z";
   const toDate = filters.toDate || moment();
@@ -31,7 +31,7 @@ const getList = async (req, res) => {
     where: {
       [Op.and]: [
         { status: { [Op.like]: "%" + status + "%" } },
-        { supplierGroupName: { [Op.like]: "%" + supplierGroupName + "%" } },
+        { customerGroupName: { [Op.like]: "%" + customerGroupName + "%" } },
         { healthFacilityId: { [Op.like]: "%" + healthFacilityId + "%" } },
       ],
       createdAt: {
@@ -44,7 +44,7 @@ const getList = async (req, res) => {
     limit: size,
   };
 
-  SupplierGroup.findAndCountAll(options)
+  CustomerGroup.findAndCountAll(options)
     .then((result) => {
       res.status(200).json({
         results: {
@@ -71,15 +71,15 @@ const getList = async (req, res) => {
 
 const getOne = async (req, res) => {
   const { id } = req.params;
-  SupplierGroup.findOne({
+  CustomerGroup.findOne({
     where: {
       id: id,
     },
   })
-    .then((supplierGroup) => {
+    .then((customerGroup) => {
       res.status(200).json({
         results: {
-          list: supplierGroup,
+          list: customerGroup,
           pagination: [],
         },
         success: true,
@@ -91,81 +91,81 @@ const getOne = async (req, res) => {
       res.status(200).json({
         success: true,
         error: err.message,
-        message: "Xảy ra lỗi khi lấy thông tin nhóm nhà cung cấp!",
+        message: "Xảy ra lỗi khi lấy thông tin nhóm khách hàng!",
       });
     });
 };
 
 const create = async (req, res) => {
-  const { id, supplierGroupName, healthFacilityId, status } = req.body;
-  const supplierGroup = await SupplierGroup.findOne({
+  const { id, customerGroupName, healthFacilityId, status } = req.body;
+  const customerGroup = await CustomerGroup.findOne({
     where: {
       [Op.and]: [
-        { supplierGroupName: supplierGroupName },
+        { customerGroupName: customerGroupName },
         { healthFacilityId: healthFacilityId },
       ],
     },
   });
 
-  if (supplierGroup) {
+  if (customerGroup) {
     res.status(200).json({
       success: false,
-      error: "Nhóm nhà cung cấp đã tồn tại!",
-      message: "Nhóm nhà cung cấp đã tồn tại!",
+      error: "Nhóm khách hàng đã tồn tại!",
+      message: "Nhóm khách hàng đã tồn tại!",
     });
   } else {
-    SupplierGroup.create({
+    CustomerGroup.create({
       id:
         id ||
         Math.floor(Math.random() * (100000000000 - 1000000000 + 1)) +
           100000000000,
-      supplierGroupName,
+      customerGroupName,
       healthFacilityId,
       status,
     })
-      .then((supplierGroup) => {
+      .then((customerGroup) => {
         res.status(200).json({
           results: {
-            list: supplierGroup,
+            list: customerGroup,
             pagination: [],
           },
           success: true,
           error: "",
-          message: "Tạo mới nhóm nhà cung cấp thành công!",
+          message: "Tạo mới nhóm khách hàng thành công!",
         });
       })
       .catch((err) => {
         res.status(200).json({
           success: false,
           error: err.message,
-          message: "Xảy ra lỗi khi tạo mới nhóm nhà cung cấp!",
+          message: "Xảy ra lỗi khi tạo mới nhóm khách hàng!",
         });
       });
   }
 };
 const updateRecord = async (req, res) => {
   const { id } = req.params;
-  const { supplierGroupName, supplierGroupNameOld, healthFacilityId, status } =
+  const { customerGroupName, customerGroupNameOld, healthFacilityId, status } =
     req.body;
-  const supplierGroup = await SupplierGroup.findOne({
+  const customerGroup = await CustomerGroup.findOne({
     where: {
       [Op.and]: [
-        { supplierGroupName: supplierGroupName },
+        { customerGroupName: customerGroupName },
         { healthFacilityId: healthFacilityId },
       ],
     },
   });
-  if (supplierGroup && supplierGroupNameOld !== supplierGroupName) {
+  if (customerGroup && customerGroupNameOld !== customerGroupName) {
     res.status(200).json({
       success: false,
-      error: "Nhóm nhà cung cấp đã tồn tại!",
-      message: "Nhóm nhà cung cấp đã tồn tại!",
+      error: "Nhóm khách hàng đã tồn tại!",
+      message: "Nhóm khách hàng đã tồn tại!",
     });
   } else {
-    SupplierGroup.update(
+    CustomerGroup.update(
       {
         status: status,
-        supplierGroupName: supplierGroupName,
+        customerGroupName: customerGroupName,
         healthFacilityId: healthFacilityId,
       },
       {
@@ -174,22 +174,22 @@ const updateRecord = async (req, res) => {
         },
       }
     )
-      .then((supplierGroup) => {
+      .then((customerGroup) => {
         res.status(200).json({
           results: {
-            list: supplierGroup,
+            list: customerGroup,
             pagination: [],
           },
           success: true,
           error: "",
-          message: "Cập nhật nhóm nhà cung cấp thành công!",
+          message: "Cập nhật nhóm khách hàng thành công!",
         });
       })
       .catch((err) => {
         res.status(200).json({
           success: false,
           error: err.message,
-          message: "Xảy ra lỗi khi cập nhật nhóm nhà cung cấp!",
+          message: "Xảy ra lỗi khi cập nhật nhóm khách hàng!",
         });
       });
   }
@@ -197,7 +197,7 @@ const updateRecord = async (req, res) => {
 const updateStatus = async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
-  SupplierGroup.update(
+  CustomerGroup.update(
     { status: status },
     {
       where: {
@@ -205,10 +205,10 @@ const updateStatus = async (req, res) => {
       },
     }
   )
-    .then((supplierGroup) => {
+    .then((customerGroup) => {
       res.status(200).json({
         results: {
-          list: supplierGroup,
+          list: customerGroup,
           pagination: [],
         },
         success: true,
@@ -227,27 +227,27 @@ const updateStatus = async (req, res) => {
 
 const deleteRecord = async (req, res) => {
   const { id } = req.params;
-  SupplierGroup.destroy({
+  CustomerGroup.destroy({
     where: {
       id: id,
     },
   })
-    .then((supplierGroup) => {
+    .then((customerGroup) => {
       res.status(200).json({
         results: {
-          list: supplierGroup,
+          list: customerGroup,
           pagination: [],
         },
         success: true,
         error: "",
-        message: "Xóa nhóm nhà cung cấp thành công!",
+        message: "Xóa nhóm khách hàng thành công!",
       });
     })
     .catch((err) => {
       res.status(200).json({
         success: false,
         message: err.message,
-        message: "Xảy ra lôi khi xóa nhóm nhà cung cấp!",
+        message: "Xảy ra lôi khi xóa nhóm khách hàng!",
       });
     });
 };

@@ -85,6 +85,18 @@ initialData = (db) => {
     healthFacilityId: 12345678911,
     status: 1,
   });
+  db.producerGroup.create({
+    id: 58458965475,
+    producerGroupName: "Công ty dược phẩm NAR",
+    healthFacilityId: 12345678911,
+    status: 1,
+  });
+  db.customerGroup.create({
+    id: 58458965475,
+    customerGroupName: "Khách hàng thân thiết",
+    healthFacilityId: 12345678911,
+    status: 1,
+  });
   db.healthFacilitySpecialist.create({
     id: 58458965475,
     healthFacilityId: 12345678911,

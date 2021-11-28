@@ -1,5 +1,5 @@
 const db = require("../models");
-const SupplierGroup = db.supplierGroup;
+const ProducerGroup = db.producerGroup;
 const moment = require("moment");
 
 const Op = db.Sequelize.Op;
@@ -13,14 +13,14 @@ const getList = async (req, res) => {
     ? attributes.split(",")
     : [
         "id",
-        "supplierGroupName",
+        "producerGroupName",
         "healthFacilityId",
         "status",
         "createdAt",
         "updatedAt",
       ];
   const status = filters.status || "";
-  const supplierGroupName = filters.supplierGroupName || "";
+  const producerGroupName = filters.producerGroupName || "";
   const healthFacilityId = filters.healthFacilityId || "";
   const fromDate = filters.fromDate || "2021-01-01T14:06:48.000Z";
   const toDate = filters.toDate || moment();
@@ -31,7 +31,7 @@ const getList = async (req, res) => {
     where: {
       [Op.and]: [
         { status: { [Op.like]: "%" + status + "%" } },
-        { supplierGroupName: { [Op.like]: "%" + supplierGroupName + "%" } },
+        { producerGroupName: { [Op.like]: "%" + producerGroupName + "%" } },
         { healthFacilityId: { [Op.like]: "%" + healthFacilityId + "%" } },
       ],
       createdAt: {
@@ -44,7 +44,7 @@ const getList = async (req, res) => {
     limit: size,
   };
 
-  SupplierGroup.findAndCountAll(options)
+  ProducerGroup.findAndCountAll(options)
     .then((result) => {
       res.status(200).json({
         results: {
@@ -71,15 +71,15 @@ const getList = async (req, res) => {
 
 const getOne = async (req, res) => {
   const { id } = req.params;
-  SupplierGroup.findOne({
+  ProducerGroup.findOne({
     where: {
       id: id,
     },
   })
-    .then((supplierGroup) => {
+    .then((producerGroup) => {
       res.status(200).json({
         results: {
-          list: supplierGroup,
+          list: producerGroup,
           pagination: [],
         },
         success: true,
@@ -91,81 +91,81 @@ const getOne = async (req, res) => {
       res.status(200).json({
         success: true,
         error: err.message,
-        message: "Xảy ra lỗi khi lấy thông tin nhóm nhà cung cấp!",
+        message: "Xảy ra lỗi khi lấy thông tin nhóm nhà sản xuất!",
       });
     });
 };
 
 const create = async (req, res) => {
-  const { id, supplierGroupName, healthFacilityId, status } = req.body;
-  const supplierGroup = await SupplierGroup.findOne({
+  const { id, producerGroupName, healthFacilityId, status } = req.body;
+  const producerGroup = await ProducerGroup.findOne({
     where: {
       [Op.and]: [
-        { supplierGroupName: supplierGroupName },
+        { producerGroupName: producerGroupName },
         { healthFacilityId: healthFacilityId },
       ],
     },
   });
 
-  if (supplierGroup) {
+  if (producerGroup) {
     res.status(200).json({
       success: false,
-      error: "Nhóm nhà cung cấp đã tồn tại!",
-      message: "Nhóm nhà cung cấp đã tồn tại!",
+      error: "Nhóm nhà sản xuất đã tồn tại!",
+      message: "Nhóm nhà sản xuất đã tồn tại!",
     });
   } else {
-    SupplierGroup.create({
+    ProducerGroup.create({
       id:
         id ||
         Math.floor(Math.random() * (100000000000 - 1000000000 + 1)) +
           100000000000,
-      supplierGroupName,
+      producerGroupName,
       healthFacilityId,
       status,
     })
-      .then((supplierGroup) => {
+      .then((producerGroup) => {
         res.status(200).json({
           results: {
-            list: supplierGroup,
+            list: producerGroup,
             pagination: [],
           },
           success: true,
           error: "",
-          message: "Tạo mới nhóm nhà cung cấp thành công!",
+          message: "Tạo mới nhóm nhà sản xuất thành công!",
         });
       })
       .catch((err) => {
         res.status(200).json({
           success: false,
           error: err.message,
-          message: "Xảy ra lỗi khi tạo mới nhóm nhà cung cấp!",
+          message: "Xảy ra lỗi khi tạo mới nhóm nhà sản xuất!",
         });
       });
   }
 };
 const updateRecord = async (req, res) => {
   const { id } = req.params;
-  const { supplierGroupName, supplierGroupNameOld, healthFacilityId, status } =
+  const { producerGroupName, producerGroupNameOld, healthFacilityId, status } =
     req.body;
-  const supplierGroup = await SupplierGroup.findOne({
+  const producerGroup = await ProducerGroup.findOne({
     where: {
       [Op.and]: [
-        { supplierGroupName: supplierGroupName },
+        { producerGroupName: producerGroupName },
         { healthFacilityId: healthFacilityId },
       ],
     },
   });
-  if (supplierGroup && supplierGroupNameOld !== supplierGroupName) {
+  if (producerGroup && producerGroupNameOld !== producerGroupName) {
     res.status(200).json({
       success: false,
-      error: "Nhóm nhà cung cấp đã tồn tại!",
-      message: "Nhóm nhà cung cấp đã tồn tại!",
+      error: "Nhóm nhà sản xuất đã tồn tại!",
+      message: "Nhóm nhà sản xuất đã tồn tại!",
     });
   } else {
-    SupplierGroup.update(
+    ProducerGroup.update(
       {
         status: status,
-        supplierGroupName: supplierGroupName,
+        producerGroupName: producerGroupName,
         healthFacilityId: healthFacilityId,
       },
       {
@@ -174,22 +174,22 @@ const updateRecord = async (req, res) => {
         },
       }
     )
-      .then((supplierGroup) => {
+      .then((producerGroup) => {
         res.status(200).json({
           results: {
-            list: supplierGroup,
+            list: producerGroup,
             pagination: [],
           },
           success: true,
           error: "",
-          message: "Cập nhật nhóm nhà cung cấp thành công!",
+          message: "Cập nhật nhóm nhà sản xuất thành công!",
         });
       })
       .catch((err) => {
         res.status(200).json({
           success: false,
           error: err.message,
-          message: "Xảy ra lỗi khi cập nhật nhóm nhà cung cấp!",
+          message: "Xảy ra lỗi khi cập nhật nhóm nhà sản xuất!",
         });
       });
   }
@@ -197,7 +197,7 @@ const updateRecord = async (req, res) => {
 const updateStatus = async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
-  SupplierGroup.update(
+  ProducerGroup.update(
     { status: status },
     {
       where: {
@@ -205,10 +205,10 @@ const updateStatus = async (req, res) => {
       },
     }
   )
-    .then((supplierGroup) => {
+    .then((producerGroup) => {
       res.status(200).json({
         results: {
-          list: supplierGroup,
+          list: producerGroup,
           pagination: [],
         },
         success: true,
@@ -227,27 +227,27 @@ const updateStatus = async (req, res) => {
 
 const deleteRecord = async (req, res) => {
   const { id } = req.params;
-  SupplierGroup.destroy({
+  ProducerGroup.destroy({
     where: {
       id: id,
     },
   })
-    .then((supplierGroup) => {
+    .then((producerGroup) => {
       res.status(200).json({
         results: {
-          list: supplierGroup,
+          list: producerGroup,
           pagination: [],
         },
         success: true,
         error: "",
-        message: "Xóa nhóm nhà cung cấp thành công!",
+        message: "Xóa nhóm nhà sản xuất thành công!",
       });
     })
     .catch((err) => {
       res.status(200).json({
         success: false,
         message: err.message,
-        message: "Xảy ra lôi khi xóa nhóm nhà cung cấp!",
+        message: "Xảy ra lôi khi xóa nhóm nhà sản xuất!",
       });
     });
 };
