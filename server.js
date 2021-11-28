@@ -74,6 +74,7 @@ require("./app/routes/healthFacility.routes")(app);
 require("./app/routes/healthFacilitySpecialist.routes")(app);
 require("./app/routes/healthFacilityUser.routes")(app);
 require("./app/routes/supplierGroup.routes")(app);
+require("./app/routes/supplier.routes")(app);
 require("./app/routes/producerGroup.routes")(app);
 require("./app/routes/customerGroup.routes")(app);
 

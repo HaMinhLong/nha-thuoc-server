@@ -59,6 +59,7 @@ db.supplierGroup = require("../models/supplierGroup.model")(
   sequelize,
   Sequelize
 );
+db.supplier = require("../models/supplier.model")(sequelize, Sequelize);
 db.producerGroup = require("../models/producerGroup.model")(
   sequelize,
   Sequelize
@@ -147,6 +148,10 @@ db.menu.belongsToMany(db.userGroup, { through: "userGroupRoles" });
 // supplierGroup - healthFacility
 db.healthFacility.hasMany(db.supplierGroup);
 db.supplierGroup.belongsTo(db.healthFacility);
+
+// supplierGroup - supplier
+db.supplierGroup.hasMany(db.supplier);
+db.supplier.belongsTo(db.supplierGroup);
 
 // producerGroup - healthFacility
 db.healthFacility.hasMany(db.producerGroup);

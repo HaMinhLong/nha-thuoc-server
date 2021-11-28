@@ -85,6 +85,13 @@ initialData = (db) => {
     healthFacilityId: 12345678911,
     status: 1,
   });
+  db.supplier.create({
+    id: 28448165375,
+    supplierName: "Nhà cung cấp thực phẩm chức năng Minh Đức",
+    supplierGroupId: 58458965475,
+    healthFacilityId: 12345678911,
+    status: 1,
+  });
   db.producerGroup.create({
     id: 58458965475,
     producerGroupName: "Công ty dược phẩm NAR",
