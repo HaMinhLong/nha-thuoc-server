@@ -2,7 +2,9 @@ const db = require("../models");
 const HealthFacilityUser = db.healthFacilityUser;
 const HealthFacility = db.healthFacility;
 const User = db.user;
-
+const Ward = db.ward;
+const District = db.district;
+const Province = db.province;
 const moment = require("moment");
 
 const Op = db.Sequelize.Op;
@@ -26,7 +28,7 @@ const getList = async (req, res) => {
     order: [order],
     offset: ranges[0],
     limit: size,
-    attributes: ["id", "healthFacilityName", "createdAt"],
+    attributes: ["id", "healthFacilityName", "mobile", "address", "createdAt"],
     include: [
       {
         model: User,
@@ -38,6 +40,21 @@ const getList = async (req, res) => {
           },
           attributes: ["id", "healthFacilityId", "userId"],
         },
+      },
+      {
+        model: District,
+        required: true,
+        attributes: ["id", "districtName"],
+      },
+      {
+        model: Province,
+        required: true,
+        attributes: ["id", "provinceName"],
+      },
+      {
+        model: Ward,
+        required: true,
+        attributes: ["id", "wardName"],
       },
     ],
   };
