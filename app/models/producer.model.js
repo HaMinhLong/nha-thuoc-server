@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-  const Supplier = sequelize.define("suppliers", {
+  const Producer = sequelize.define("producers", {
     id: {
       type: DataTypes.BIGINT,
       allowNull: false,
@@ -7,45 +7,30 @@ module.exports = (sequelize, DataTypes) => {
       autoIncrement: true,
       field: "id",
     },
-    supplierName: {
+    producerName: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "supplierName",
+      field: "producerName",
     },
     mobile: {
       type: DataTypes.STRING,
       allowNull: false,
       field: "mobile",
     },
-    taxCode: {
-      type: DataTypes.STRING,
-      allowNull: true,
-      field: "taxCode",
-    },
     email: {
       type: DataTypes.STRING,
       allowNull: true,
       field: "email",
-    },
-    website: {
-      type: DataTypes.STRING,
-      allowNull: true,
-      field: "website",
     },
     address: {
       type: DataTypes.STRING,
       allowNull: true,
       field: "address",
     },
-    description: {
-      type: DataTypes.STRING,
-      allowNull: true,
-      field: "description",
-    },
-    supplierGroupId: {
+    producerGroupId: {
       type: DataTypes.BIGINT,
       allowNull: false,
-      field: "supplierGroupId",
+      field: "producerGroupId",
     },
     healthFacilityId: {
       type: DataTypes.BIGINT,
@@ -59,5 +44,5 @@ module.exports = (sequelize, DataTypes) => {
     },
   });
 
-  return Supplier;
+  return Producer;
 };

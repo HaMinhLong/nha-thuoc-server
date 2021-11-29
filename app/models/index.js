@@ -64,10 +64,12 @@ db.producerGroup = require("../models/producerGroup.model")(
   sequelize,
   Sequelize
 );
+db.producer = require("../models/producer.model")(sequelize, Sequelize);
 db.customerGroup = require("../models/customerGroup.model")(
   sequelize,
   Sequelize
 );
+db.customer = require("../models/customer.model")(sequelize, Sequelize);
 
 // userGroup - user
 db.userGroup.hasMany(db.user);
@@ -157,9 +159,27 @@ db.supplier.belongsTo(db.supplierGroup);
 db.healthFacility.hasMany(db.producerGroup);
 db.producerGroup.belongsTo(db.healthFacility);
 
+// producerGroup - producer
+db.producerGroup.hasMany(db.producer);
+db.producer.belongsTo(db.producerGroup);
+
 // customerGroup - healthFacility
 db.healthFacility.hasMany(db.customerGroup);
 db.customerGroup.belongsTo(db.healthFacility);
+
+// customerGroup - customer
+db.customerGroup.hasMany(db.customer);
+db.customer.belongsTo(db.customerGroup);
+
+// province - customer
+db.province.hasMany(db.customer);
+db.customer.belongsTo(db.province);
+// district - customer
+db.district.hasMany(db.customer);
+db.customer.belongsTo(db.district);
+// ward - customer
+db.ward.hasMany(db.customer);
+db.customer.belongsTo(db.ward);
 
 initialDataServer.initialData(db);
 

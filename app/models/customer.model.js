@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-  const Supplier = sequelize.define("suppliers", {
+  const Customer = sequelize.define("customers", {
     id: {
       type: DataTypes.BIGINT,
       allowNull: false,
@@ -7,45 +7,55 @@ module.exports = (sequelize, DataTypes) => {
       autoIncrement: true,
       field: "id",
     },
-    supplierName: {
+    customerName: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "supplierName",
+      field: "customerName",
     },
     mobile: {
       type: DataTypes.STRING,
       allowNull: false,
       field: "mobile",
     },
-    taxCode: {
+    dateOfBirth: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "taxCode",
+      field: "dateOfBirth",
+    },
+    gender: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "gender",
     },
     email: {
       type: DataTypes.STRING,
       allowNull: true,
       field: "email",
     },
-    website: {
+    provinceId: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "website",
+      field: "provinceId",
+    },
+    districtId: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "districtId",
+    },
+    wardId: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "wardId",
     },
     address: {
       type: DataTypes.STRING,
       allowNull: true,
       field: "address",
     },
-    description: {
-      type: DataTypes.STRING,
-      allowNull: true,
-      field: "description",
-    },
-    supplierGroupId: {
+    customerGroupId: {
       type: DataTypes.BIGINT,
       allowNull: false,
-      field: "supplierGroupId",
+      field: "customerGroupId",
     },
     healthFacilityId: {
       type: DataTypes.BIGINT,
@@ -59,5 +69,5 @@ module.exports = (sequelize, DataTypes) => {
     },
   });
 
-  return Supplier;
+  return Customer;
 };

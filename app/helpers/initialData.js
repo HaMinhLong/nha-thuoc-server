@@ -88,6 +88,12 @@ initialData = (db) => {
   db.supplier.create({
     id: 28448165375,
     supplierName: "Nhà cung cấp thực phẩm chức năng Minh Đức",
+    mobile: "",
+    taxCode: "",
+    email: "minhduc@gmail.com",
+    website: "minhduc.com",
+    address: "",
+    description: "",
     supplierGroupId: 58458965475,
     healthFacilityId: 12345678911,
     status: 1,
@@ -98,9 +104,34 @@ initialData = (db) => {
     healthFacilityId: 12345678911,
     status: 1,
   });
+  db.producer.create({
+    id: 28448165375,
+    producerName: "Cơ sở sản xuất dược phẩm số 1",
+    mobile: "0963339657",
+    email: "narso1@gmail.com",
+    address: "",
+    producerGroupId: 58458965475,
+    healthFacilityId: 12345678911,
+    status: 1,
+  });
   db.customerGroup.create({
     id: 58458965475,
-    customerGroupName: "Khách hàng thân thiết",
+    customerGroupName: "Khách hàng lẻ",
+    healthFacilityId: 12345678911,
+    status: 1,
+  });
+  db.customer.create({
+    id: 28448165375,
+    customerName: "Hà Minh Long",
+    mobile: "",
+    dateOfBirth: null,
+    gender: 1,
+    email: "haminhlong3@gmail.com",
+    provinceId: null,
+    districtId: null,
+    wardId: null,
+    address: "",
+    customerGroupId: 58458965475,
     healthFacilityId: 12345678911,
     status: 1,
   });
