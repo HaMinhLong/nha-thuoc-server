@@ -70,6 +70,7 @@ db.customerGroup = require("../models/customerGroup.model")(
   Sequelize
 );
 db.customer = require("../models/customer.model")(sequelize, Sequelize);
+db.medicineType = require("../models/medicineType.model")(sequelize, Sequelize);
 db.apothecary = require("../models/apothecary.model")(sequelize, Sequelize);
 db.package = require("../models/package.model")(sequelize, Sequelize);
 db.unit = require("../models/unit.model")(sequelize, Sequelize);

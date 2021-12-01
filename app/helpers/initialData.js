@@ -135,6 +135,11 @@ initialData = (db) => {
     healthFacilityId: 12345678911,
     status: 1,
   });
+  db.medicineType.create({
+    id: 28448165375,
+    medicineTypeName: "Thuốc kháng sinh",
+    status: 1,
+  });
   db.apothecary.create({
     id: 28448165375,
     apothecaryName: "Viên nén",
