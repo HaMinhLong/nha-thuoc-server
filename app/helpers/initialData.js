@@ -135,6 +135,11 @@ initialData = (db) => {
     healthFacilityId: 12345678911,
     status: 1,
   });
+  db.apothecary.create({
+    id: 28448165375,
+    apothecaryName: "Viên nén",
+    status: 1,
+  });
   db.package.create({
     id: 28448165375,
     packageName: "Hộp 2 vỉ x 14 viên",
