@@ -171,16 +171,6 @@ db.customerGroup.belongsTo(db.healthFacility);
 db.customerGroup.hasMany(db.customer);
 db.customer.belongsTo(db.customerGroup);
 
-// province - customer
-db.province.hasMany(db.customer);
-db.customer.belongsTo(db.province);
-// district - customer
-db.district.hasMany(db.customer);
-db.customer.belongsTo(db.district);
-// ward - customer
-db.ward.hasMany(db.customer);
-db.customer.belongsTo(db.ward);
-
 initialDataServer.initialData(db);
 
 module.exports = db;

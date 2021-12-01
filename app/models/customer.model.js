@@ -18,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
       field: "mobile",
     },
     dateOfBirth: {
-      type: DataTypes.STRING,
+      type: DataTypes.DATEONLY,
       allowNull: true,
       field: "dateOfBirth",
     },
@@ -31,21 +31,6 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: true,
       field: "email",
-    },
-    provinceId: {
-      type: DataTypes.STRING,
-      allowNull: true,
-      field: "provinceId",
-    },
-    districtId: {
-      type: DataTypes.STRING,
-      allowNull: true,
-      field: "districtId",
-    },
-    wardId: {
-      type: DataTypes.STRING,
-      allowNull: true,
-      field: "wardId",
     },
     address: {
       type: DataTypes.STRING,

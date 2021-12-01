@@ -19,9 +19,6 @@ const getList = async (req, res) => {
         "dateOfBirth",
         "gender",
         "email",
-        "provinceId",
-        "districtId",
-        "wardId",
         "address",
         "customerGroupId",
         "healthFacilityId",
@@ -33,9 +30,6 @@ const getList = async (req, res) => {
   const customerName = filters.customerName || "";
   const customerGroupId = filters.customerGroupId || "";
   const gender = filters.gender || "";
-  const provinceId = filters.customerGroupId || "";
-  const districtId = filters.districtId || "";
-  const wardId = filters.wardId || "";
   const healthFacilityId = filters.healthFacilityId || "";
   const fromDate = filters.fromDate || "2021-01-01T14:06:48.000Z";
   const toDate = filters.toDate || moment();
@@ -49,9 +43,6 @@ const getList = async (req, res) => {
         { customerName: { [Op.like]: "%" + customerName + "%" } },
         { customerGroupId: { [Op.like]: "%" + customerGroupId + "%" } },
         { gender: { [Op.like]: "%" + gender + "%" } },
-        { provinceId: { [Op.like]: "%" + provinceId + "%" } },
-        { districtId: { [Op.like]: "%" + districtId + "%" } },
-        { wardId: { [Op.like]: "%" + wardId + "%" } },
         { healthFacilityId: { [Op.like]: "%" + healthFacilityId + "%" } },
       ],
       createdAt: {
@@ -131,9 +122,6 @@ const create = async (req, res) => {
     dateOfBirth,
     gender,
     email,
-    provinceId,
-    districtId,
-    wardId,
     address,
     customerGroupId,
     healthFacilityId,
@@ -165,9 +153,6 @@ const create = async (req, res) => {
       dateOfBirth,
       gender,
       email,
-      provinceId,
-      districtId,
-      wardId,
       address,
       customerGroupId,
       healthFacilityId,
@@ -197,13 +182,11 @@ const updateRecord = async (req, res) => {
   const { id } = req.params;
   const {
     customerName,
+    customerNameOld,
     mobile,
     dateOfBirth,
     gender,
     email,
-    provinceId,
-    districtId,
-    wardId,
     address,
     customerGroupId,
     healthFacilityId,
@@ -231,9 +214,6 @@ const updateRecord = async (req, res) => {
         dateOfBirth: dateOfBirth,
         gender: gender,
         email: email,
-        provinceId: provinceId,
-        districtId: districtId,
-        wardId: wardId,
         address: address,
         customerGroupId: customerGroupId,
         healthFacilityId: healthFacilityId,
