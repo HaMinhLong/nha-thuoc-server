@@ -135,6 +135,11 @@ initialData = (db) => {
     healthFacilityId: 12345678911,
     status: 1,
   });
+  db.package.create({
+    id: 28448165375,
+    packageName: "Hộp 2 vỉ x 14 viên",
+    status: 1,
+  });
   db.unit.create({
     id: 28448165375,
     unitName: "Hộp",
@@ -431,7 +436,7 @@ initialData = (db) => {
       id: 5896324862,
       menuName: "NT - Quản lý quy cách đóng gói",
       orderBy: 5,
-      url: "/nt-packing",
+      url: "/nt-package",
       icon: "",
       parentId: 8974512578,
       status: 1,
