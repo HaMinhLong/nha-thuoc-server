@@ -79,6 +79,7 @@ require("./app/routes/producerGroup.routes")(app);
 require("./app/routes/producer.routes")(app);
 require("./app/routes/customerGroup.routes")(app);
 require("./app/routes/customer.routes")(app);
+require("./app/routes/unit.routes")(app);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;

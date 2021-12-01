@@ -70,6 +70,7 @@ db.customerGroup = require("../models/customerGroup.model")(
   Sequelize
 );
 db.customer = require("../models/customer.model")(sequelize, Sequelize);
+db.unit = require("../models/unit.model")(sequelize, Sequelize);
 
 // userGroup - user
 db.userGroup.hasMany(db.user);
@@ -171,6 +172,6 @@ db.customerGroup.belongsTo(db.healthFacility);
 db.customerGroup.hasMany(db.customer);
 db.customer.belongsTo(db.customerGroup);
 
-initialDataServer.initialData(db);
+// initialDataServer.initialData(db);
 
 module.exports = db;

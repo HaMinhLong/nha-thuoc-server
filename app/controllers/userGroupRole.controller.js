@@ -109,6 +109,9 @@ const getListAuthRoutes = (req, res) => {
     order: [["orderBy", "ASC"]],
     offset: ranges[0],
     limit: size,
+    where: {
+      status: 1,
+    },
     hierarchy: true,
   };
   Menu.findAndCountAll(options)
