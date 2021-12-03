@@ -77,6 +77,7 @@ db.medicineType = require("../models/medicineType.model")(sequelize, Sequelize);
 db.apothecary = require("../models/apothecary.model")(sequelize, Sequelize);
 db.package = require("../models/package.model")(sequelize, Sequelize);
 db.unit = require("../models/unit.model")(sequelize, Sequelize);
+db.warehouse = require("../models/warehouse.model")(sequelize, Sequelize);
 
 // userGroup - user
 db.userGroup.hasMany(db.user);
@@ -201,6 +202,19 @@ db.medicine.belongsTo(db.healthFacility);
 // medicine - unit
 db.medicine.belongsToMany(db.unit, { through: "medicineUnits" });
 db.unit.belongsToMany(db.medicine, { through: "medicineUnits" });
+
+// healthFacility - warehouse
+db.healthFacility.hasMany(db.warehouse);
+db.warehouse.belongsTo(db.healthFacility);
+// province - warehouse
+db.province.hasMany(db.warehouse);
+db.warehouse.belongsTo(db.province);
+// district - warehouse
+db.district.hasMany(db.warehouse);
+db.warehouse.belongsTo(db.district);
+// ward - warehouse
+db.ward.hasMany(db.warehouse);
+db.warehouse.belongsTo(db.ward);
 
 initialDataServer.initialData(db);
 

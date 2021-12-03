@@ -85,6 +85,7 @@ require("./app/routes/medicineType.routes")(app);
 require("./app/routes/apothecary.routes")(app);
 require("./app/routes/package.routes")(app);
 require("./app/routes/unit.routes")(app);
+require("./app/routes/warehouse.routes")(app);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;

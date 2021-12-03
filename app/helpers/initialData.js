@@ -51,6 +51,7 @@ initialData = (db) => {
     address: "Thôn Đại Hạnh",
     status: 1,
   });
+
   db.medicalFacility.create({
     id: 12345678911,
     medicalFacilityName: "Phòng khám Trung Yên",
@@ -77,6 +78,16 @@ initialData = (db) => {
     districtId: 78454265475,
     wardId: 78447865475,
     address: "Thôn Đại Hạnh",
+    status: 1,
+  });
+  db.warehouse.create({
+    id: 12345678911,
+    warehouseName: "Kho thuốc Minh Đức",
+    provinceId: 78458965475,
+    districtId: 78454265475,
+    wardId: 78447865475,
+    address: "Thôn Đại Hạnh",
+    healthFacilityId: 12345678911,
     status: 1,
   });
   db.supplierGroup.create({
@@ -479,6 +490,15 @@ initialData = (db) => {
       menuName: "NT - Quản lý đơn vị tính",
       orderBy: 6,
       url: "/nt-unit",
+      icon: "",
+      parentId: 8974512578,
+      status: 1,
+    },
+    {
+      id: 9845120123,
+      menuName: "Quản lý kho",
+      orderBy: 15,
+      url: "/warehouse",
       icon: "",
       parentId: 8974512578,
       status: 1,
@@ -971,6 +991,22 @@ initialData = (db) => {
       menuParentId: 8974512578,
       userGroupId: 12345678910,
       menuId: 5896321456,
+      isView: true,
+      isAdd: true,
+      isUpdate: true,
+      isDelete: true,
+      isBlock: true,
+      isApprove: true,
+      isReceipts: true,
+      isPrescription: true,
+      isResult: true,
+    },
+    {
+      id: 84102365896,
+      menuName: "Quản lý kho",
+      menuParentId: 8974512578,
+      userGroupId: 12345678910,
+      menuId: 9845120123,
       isView: true,
       isAdd: true,
       isUpdate: true,
