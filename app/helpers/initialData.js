@@ -80,6 +80,32 @@ initialData = (db) => {
     address: "Thôn Đại Hạnh",
     status: 1,
   });
+  db.paperSizeType.create({
+    id: 1,
+    paperSizeTypeName: "Khổ A4",
+    status: 1,
+  });
+  db.paperSizeType.create({
+    id: 2,
+    paperSizeTypeName: "Khổ A5",
+    status: 1,
+  });
+  db.paperSizeType.create({
+    id: 3,
+    paperSizeTypeName: "Khổ Bill K57",
+    status: 1,
+  });
+  db.paperSizeType.create({
+    id: 4,
+    paperSizeTypeName: "Khổ Bill K80",
+    status: 1,
+  });
+  db.printForm.create({
+    id: 12345678911,
+    printFormName: "MẪU PHIẾU KẾT QUẢ LÂM SÀNG",
+    paperSizeTypeId: 2,
+    status: 1,
+  });
   db.warehouse.create({
     id: 12345678911,
     warehouseName: "Kho thuốc Minh Đức",
@@ -499,6 +525,15 @@ initialData = (db) => {
       menuName: "Quản lý kho",
       orderBy: 15,
       url: "/warehouse",
+      icon: "",
+      parentId: 8974512578,
+      status: 1,
+    },
+    {
+      id: 4786120325,
+      menuName: "Quản lý mẫu in",
+      orderBy: 16,
+      url: "/print-form",
       icon: "",
       parentId: 8974512578,
       status: 1,
@@ -1007,6 +1042,22 @@ initialData = (db) => {
       menuParentId: 8974512578,
       userGroupId: 12345678910,
       menuId: 9845120123,
+      isView: true,
+      isAdd: true,
+      isUpdate: true,
+      isDelete: true,
+      isBlock: true,
+      isApprove: true,
+      isReceipts: true,
+      isPrescription: true,
+      isResult: true,
+    },
+    {
+      id: 3541051230,
+      menuName: "Quản lý mẫu in",
+      menuParentId: 8974512578,
+      userGroupId: 12345678910,
+      menuId: 4786120325,
       isView: true,
       isAdd: true,
       isUpdate: true,

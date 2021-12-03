@@ -78,6 +78,15 @@ db.apothecary = require("../models/apothecary.model")(sequelize, Sequelize);
 db.package = require("../models/package.model")(sequelize, Sequelize);
 db.unit = require("../models/unit.model")(sequelize, Sequelize);
 db.warehouse = require("../models/warehouse.model")(sequelize, Sequelize);
+db.printForm = require("../models/printForm.model")(sequelize, Sequelize);
+db.paperSizeType = require("../models/paperSizeType.model")(
+  sequelize,
+  Sequelize
+);
+
+// userGroup - printForm
+db.paperSizeType.hasMany(db.printForm);
+db.printForm.belongsTo(db.paperSizeType);
 
 // userGroup - user
 db.userGroup.hasMany(db.user);
