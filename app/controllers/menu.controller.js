@@ -405,6 +405,11 @@ const updateStatusList = async (req, res) => {
 };
 const deleteRecord = async (req, res) => {
   const { id } = req.params;
+  UserGroupRole.destroy({
+    where: {
+      menuId: id,
+    },
+  });
   Menu.destroy({
     where: {
       id: id,

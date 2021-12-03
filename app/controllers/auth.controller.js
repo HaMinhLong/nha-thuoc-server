@@ -53,7 +53,6 @@ const signIn = (req, res) => {
           message: "Tài khoản không tồn tại!",
         });
       }
-      console.log("user", user);
       if (user.status === -2) {
         return res.status(200).json({
           success: false,

@@ -77,8 +77,6 @@ export default {
       }
     }
 
-    console.log(whereFilter);
-
     return whereFilter;
   },
 };

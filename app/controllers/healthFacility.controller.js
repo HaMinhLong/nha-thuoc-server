@@ -317,6 +317,11 @@ const updateStatus = async (req, res) => {
 
 const deleteRecord = async (req, res) => {
   const { id } = req.params;
+  HealthFacilitySpecialist.destroy({
+    where: {
+      healthFacilityId: id,
+    },
+  });
   HealthFacility.destroy({
     where: {
       id: id,

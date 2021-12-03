@@ -1,6 +1,7 @@
 const db = require("../models");
-const Specialist = db.specialist;
-const HealthFacilitySpecialist = db.healthFacilitySpecialist;
+const MedicineUnit = db.medicineUnit;
+const Medicine = db.medicine;
+const Unit = db.unit;
 const moment = require("moment");
 
 const Op = db.Sequelize.Op;
@@ -12,9 +13,8 @@ const getList = async (req, res) => {
   const order = sort ? JSON.parse(sort) : ["createdAt", "DESC"];
   const attributesQuery = attributes
     ? attributes.split(",")
-    : ["id", "specialistName", "status", "createdAt", "updatedAt"];
-  const status = filters.status || "";
-  const specialistName = filters.specialistName || "";
+    : ["id", "unitName", "createdAt"];
+  const medicineId = filters.medicineId || "";
   const fromDate = filters.fromDate || "2021-01-01T14:06:48.000Z";
   const toDate = filters.toDate || moment();
   const size = ranges[1] - ranges[0];
@@ -22,10 +22,7 @@ const getList = async (req, res) => {
 
   var options = {
     where: {
-      [Op.and]: [
-        { status: { [Op.like]: "%" + status + "%" } },
-        { specialistName: { [Op.like]: "%" + specialistName + "%" } },
-      ],
+      [Op.and]: [{ status: { [Op.like]: "%" + 1 + "%" } }],
       createdAt: {
         [Op.between]: [fromDate, toDate],
       },
@@ -34,9 +31,29 @@ const getList = async (req, res) => {
     attributes: attributesQuery,
     offset: ranges[0],
     limit: size,
+    include: [
+      {
+        model: Medicine,
+        required: true,
+        attributes: ["id", "medicineName"],
+        through: {
+          where: {
+            medicineId: { [Op.like]: "%" + medicineId + "%" },
+          },
+          attributes: [
+            "id",
+            "retailPrice",
+            "wholesalePrice",
+            "amount",
+            "medicineId",
+            "unitId",
+          ],
+        },
+      },
+    ],
   };
 
-  Specialist.findAndCountAll(options)
+  Unit.findAndCountAll(options)
     .then((result) => {
       res.status(200).json({
         results: {
@@ -60,18 +77,17 @@ const getList = async (req, res) => {
       });
     });
 };
-
 const getOne = async (req, res) => {
   const { id } = req.params;
-  Specialist.findOne({
+  MedicineUnit.findOne({
     where: {
       id: id,
     },
   })
-    .then((specialist) => {
+    .then((medicineUnit) => {
       res.status(200).json({
         results: {
-          list: specialist,
+          list: medicineUnit,
           pagination: [],
         },
         success: true,
@@ -83,69 +99,80 @@ const getOne = async (req, res) => {
       res.status(200).json({
         success: true,
         error: err.message,
-        message: "Xảy ra lỗi khi lấy thông tin chuyên khoa!",
+        message: "Xảy ra lỗi khi lấy thông tin đơn vị tính!",
       });
     });
 };
 
 const create = async (req, res) => {
-  const { id, specialistName, status } = req.body;
-  const specialist = await Specialist.findOne({
-    where: { specialistName: specialistName },
+  const { id, retailPrice, wholesalePrice, amount, medicineId, unitId } =
+    req.body;
+  const medicineUnit = await MedicineUnit.findOne({
+    where: {
+      [Op.and]: [{ medicineId: medicineId }, { unitId: unitId }],
+    },
   });
 
-  if (specialist) {
+  if (medicineUnit) {
     res.status(200).json({
       success: false,
-      error: "Chuyên khoa đã tồn tại!",
-      message: "Chuyên khoa đã tồn tại!",
+      error: "Đơn vị tính đã tồn tại!",
+      message: "Đơn vị tính đã tồn tại!",
     });
   } else {
-    Specialist.create({
+    MedicineUnit.create({
       id:
         id ||
         Math.floor(Math.random() * (100000000000 - 1000000000 + 1)) +
           100000000000,
-      specialistName,
-      status,
+      retailPrice,
+      wholesalePrice,
+      amount,
+      medicineId,
+      unitId,
     })
-      .then((specialist) => {
+      .then((medicineUnit) => {
         res.status(200).json({
           results: {
-            list: specialist,
+            list: medicineUnit,
             pagination: [],
           },
           success: true,
           error: "",
-          message: "Tạo mới chuyên khoa thành công!",
+          message: "Tạo mới đơn vị tính thành công!",
         });
       })
       .catch((err) => {
         res.status(200).json({
           success: false,
           error: err.message,
-          message: "Xảy ra lỗi khi tạo mới chuyên khoa!",
+          message: "Xảy ra lỗi khi tạo mới đơn vị tính!",
         });
       });
   }
 };
 const updateRecord = async (req, res) => {
   const { id } = req.params;
-  const { specialistName, specialistNameOld, status } = req.body;
-  const specialist = await Specialist.findOne({
-    where: { specialistName: specialistName },
+  const { retailPrice, wholesalePrice, amount, medicineId, unitId } = req.body;
+  const medicineUnit = await MedicineUnit.findOne({
+    where: {
+      [Op.and]: [{ medicineId: medicineId }, { unitId: unitId }],
+    },
   });
-  if (specialist && specialistNameOld !== specialistName) {
+  if (medicineUnit) {
     res.status(200).json({
       success: false,
-      error: "Chuyên khoa đã tồn tại!",
-      message: "Chuyên khoa đã tồn tại!",
+      error: "Đơn vị tính đã tồn tại!",
+      message: "Đơn vị tính đã tồn tại!",
     });
   } else {
-    Specialist.update(
+    MedicineUnit.update(
       {
-        status: status,
-        specialistName: specialistName,
+        retailPrice: retailPrice,
+        wholesalePrice: wholesalePrice,
+        amount: amount,
+        medicineId: medicineId,
+        unitId: unitId,
       },
       {
         where: {
@@ -153,85 +180,50 @@ const updateRecord = async (req, res) => {
         },
       }
     )
-      .then((specialist) => {
+      .then((medicineUnit) => {
         res.status(200).json({
           results: {
-            list: specialist,
+            list: medicineUnit,
             pagination: [],
           },
           success: true,
           error: "",
-          message: "Cập nhật chuyên khoa thành công!",
+          message: "Cập nhật đơn vị tính thành công!",
         });
       })
       .catch((err) => {
         res.status(200).json({
           success: false,
           error: err.message,
-          message: "Xảy ra lỗi khi cập nhật chuyên khoa!",
+          message: "Xảy ra lỗi khi cập nhật đơn vị tính!",
         });
       });
   }
 };
-const updateStatus = async (req, res) => {
-  const { id } = req.params;
-  const { status } = req.body;
-  Specialist.update(
-    { status: status },
-    {
-      where: {
-        id: id,
-      },
-    }
-  )
-    .then((specialist) => {
-      res.status(200).json({
-        results: {
-          list: specialist,
-          pagination: [],
-        },
-        success: true,
-        error: "",
-        message: "Cập nhật trạng thái thành công!",
-      });
-    })
-    .catch((err) => {
-      res.status(200).json({
-        success: false,
-        error: err.message,
-        message: "Xảy ra lỗi khi cập nhật trạng thái",
-      });
-    });
-};
 
 const deleteRecord = async (req, res) => {
   const { id } = req.params;
-  HealthFacilitySpecialist.destroy({
-    where: {
-      specialistId: id,
-    },
-  });
-  Specialist.destroy({
+  MedicineUnit.destroy({
     where: {
       id: id,
     },
   })
-    .then((specialist) => {
+    .then((medicineUnit) => {
       res.status(200).json({
         results: {
-          list: specialist,
+          list: medicineUnit,
           pagination: [],
         },
         success: true,
         error: "",
-        message: "Xóa chuyên khoa thành công!",
+        message: "Xóa đơn vị tính thành công!",
       });
     })
     .catch((err) => {
       res.status(200).json({
         success: false,
         message: err.message,
-        message: "Xảy ra lôi khi xóa chuyên khoa!",
+        message: "Xảy ra lôi khi xóa đơn vị tính!",
       });
     });
 };
@@ -240,6 +232,5 @@ module.exports = {
   getOne,
   create,
   updateRecord,
-  updateStatus,
   deleteRecord,
 };

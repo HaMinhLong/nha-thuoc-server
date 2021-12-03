@@ -79,6 +79,8 @@ require("./app/routes/producerGroup.routes")(app);
 require("./app/routes/producer.routes")(app);
 require("./app/routes/customerGroup.routes")(app);
 require("./app/routes/customer.routes")(app);
+require("./app/routes/medicine.routes")(app);
+require("./app/routes/medicineUnit.routes")(app);
 require("./app/routes/medicineType.routes")(app);
 require("./app/routes/apothecary.routes")(app);
 require("./app/routes/package.routes")(app);

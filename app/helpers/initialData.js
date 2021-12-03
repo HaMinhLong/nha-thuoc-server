@@ -135,6 +135,29 @@ initialData = (db) => {
     healthFacilityId: 12345678911,
     status: 1,
   });
+  db.medicine.create({
+    id: 28448165375,
+    medicineName: "Paracetamol Winthrop",
+    registrationNumber: "GC-236-15",
+    standard: "TCCS",
+    activeIngredientName: "Paracetamol 500mg",
+    concentration: "Paracetamol 500mg",
+    country: "Việt Nam",
+    medicineTypeId: 28448165375,
+    apothecaryId: 28448165375,
+    packageId: 28448165375,
+    producerId: 28448165375,
+    healthFacilityId: 12345678911,
+    status: 1,
+  });
+  db.medicineUnit.create({
+    id: 28448165375,
+    retailPrice: "100000",
+    wholesalePrice: "90000",
+    amount: "1",
+    medicineId: 28448165375,
+    unitId: 28448165375,
+  });
   db.medicineType.create({
     id: 28448165375,
     medicineTypeName: "Thuốc kháng sinh",

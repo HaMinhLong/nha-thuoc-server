@@ -70,6 +70,9 @@ db.customerGroup = require("../models/customerGroup.model")(
   Sequelize
 );
 db.customer = require("../models/customer.model")(sequelize, Sequelize);
+
+db.medicine = require("../models/medicine.model")(sequelize, Sequelize);
+db.medicineUnit = require("../models/medicineUnit.model")(sequelize, Sequelize);
 db.medicineType = require("../models/medicineType.model")(sequelize, Sequelize);
 db.apothecary = require("../models/apothecary.model")(sequelize, Sequelize);
 db.package = require("../models/package.model")(sequelize, Sequelize);
@@ -175,6 +178,30 @@ db.customerGroup.belongsTo(db.healthFacility);
 db.customerGroup.hasMany(db.customer);
 db.customer.belongsTo(db.customerGroup);
 
-// initialDataServer.initialData(db);
+// apothecary - medicine
+db.apothecary.hasMany(db.medicine);
+db.medicine.belongsTo(db.apothecary);
+
+// package - medicine
+db.package.hasMany(db.medicine);
+db.medicine.belongsTo(db.package);
+
+// medicineType - medicine
+db.medicineType.hasMany(db.medicine);
+db.medicine.belongsTo(db.medicineType);
+
+// producer - medicine
+db.producer.hasMany(db.medicine);
+db.medicine.belongsTo(db.producer);
+
+// healthFacility - medicine
+db.healthFacility.hasMany(db.medicine);
+db.medicine.belongsTo(db.healthFacility);
+
+// medicine - unit
+db.medicine.belongsToMany(db.unit, { through: "medicineUnits" });
+db.unit.belongsToMany(db.medicine, { through: "medicineUnits" });
+
+initialDataServer.initialData(db);
 
 module.exports = db;
