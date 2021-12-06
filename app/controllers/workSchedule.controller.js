@@ -6,6 +6,7 @@ const Op = db.Sequelize.Op;
 
 const getList = async (req, res) => {
   const { filter, range, sort, attributes } = req.query;
+  console.log("filter", filter);
   const filters = filter ? JSON.parse(filter) : {};
   const ranges = range ? JSON.parse(range) : [0, 20];
   const order = sort ? JSON.parse(sort) : ["createdAt", "ASC"];

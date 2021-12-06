@@ -4,7 +4,8 @@ const Province = db.province;
 const District = db.district;
 const Ward = db.ward;
 const WorkSchedule = db.workSchedule;
-const medicalFacilityGroup = db.medicalFacilityGroup;
+const MedicalFacilityGroup = db.medicalFacilityGroup;
+const HealthFacilitySpecialist = db.healthFacilitySpecialist;
 
 const moment = require("moment");
 
@@ -89,7 +90,7 @@ const getList = async (req, res) => {
         attributes: ["id", "wardName"],
       },
       {
-        model: medicalFacilityGroup,
+        model: MedicalFacilityGroup,
         required: true,
         attributes: ["id", "medicalFacilityGroupName"],
       },
@@ -148,9 +149,32 @@ const getOne = async (req, res) => {
     });
 };
 
+const createWorkSchedule = (id) => {
+  const dateArray = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+  ];
+  dateArray.map((item) => {
+    WorkSchedule.create({
+      id:
+        Math.floor(Math.random() * (100000000000 - 1000000000 + 1)) +
+        100000000000,
+      open: "08:00:00",
+      close: "17:30:00",
+      weekday: item,
+      healthFacilityId: id,
+      status: true,
+    });
+  });
+};
+
 const create = async (req, res) => {
   const {
-    id,
     healthFacilityName,
     healthFacilityCode,
     taxCode,
@@ -176,11 +200,11 @@ const create = async (req, res) => {
       message: "Cơ sở y tế đã tồn tại!",
     });
   } else {
+    const healthFacilityId =
+      Math.floor(Math.random() * (100000000000 - 1000000000 + 1)) +
+      100000000000;
     HealthFacility.create({
-      id:
-        id ||
-        Math.floor(Math.random() * (100000000000 - 1000000000 + 1)) +
-          100000000000,
+      id: healthFacilityId,
       healthFacilityName,
       healthFacilityCode,
       taxCode,
@@ -196,6 +220,7 @@ const create = async (req, res) => {
       status,
     })
       .then((healthFacility) => {
+        createWorkSchedule(healthFacilityId);
         res.status(200).json({
           results: {
             list: healthFacility,
