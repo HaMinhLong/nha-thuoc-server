@@ -3,6 +3,7 @@ const HealthFacility = db.healthFacility;
 const Province = db.province;
 const District = db.district;
 const Ward = db.ward;
+const WorkSchedule = db.workSchedule;
 const medicalFacilityGroup = db.medicalFacilityGroup;
 
 const moment = require("moment");
@@ -318,6 +319,11 @@ const updateStatus = async (req, res) => {
 const deleteRecord = async (req, res) => {
   const { id } = req.params;
   HealthFacilitySpecialist.destroy({
+    where: {
+      healthFacilityId: id,
+    },
+  });
+  WorkSchedule.destroy({
     where: {
       healthFacilityId: id,
     },

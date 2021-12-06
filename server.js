@@ -88,6 +88,7 @@ require("./app/routes/unit.routes")(app);
 require("./app/routes/warehouse.routes")(app);
 require("./app/routes/printForm.routes")(app);
 require("./app/routes/paperSizeType.routes")(app);
+require("./app/routes/workSchedule.routes")(app);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;

@@ -80,6 +80,62 @@ initialData = (db) => {
     address: "Thôn Đại Hạnh",
     status: 1,
   });
+  db.workSchedule.create({
+    id: 4587512036,
+    open: "08:00:00",
+    close: "17:30:00",
+    weekday: "Monday",
+    healthFacilityId: 12345678911,
+    status: true,
+  });
+  db.workSchedule.create({
+    id: 8541203658,
+    open: "08:00:00",
+    close: "17:30:00",
+    weekday: "Tuesday",
+    healthFacilityId: 12345678911,
+    status: true,
+  });
+  db.workSchedule.create({
+    id: 4120320125,
+    open: "08:00:00",
+    close: "17:30:00",
+    weekday: "Wednesday",
+    healthFacilityId: 12345678911,
+    status: true,
+  });
+  db.workSchedule.create({
+    id: 9512032558,
+    open: "08:00:00",
+    close: "17:30:00",
+    weekday: "Thursday",
+    healthFacilityId: 12345678911,
+    status: true,
+  });
+  db.workSchedule.create({
+    id: 8420120320,
+    open: "08:00:00",
+    close: "17:30:00",
+    weekday: "Friday",
+    healthFacilityId: 12345678911,
+    status: true,
+  });
+  db.workSchedule.create({
+    id: 4120120125,
+    open: "08:00:00",
+    close: "17:30:00",
+    weekday: "Saturday",
+    healthFacilityId: 12345678911,
+    status: true,
+  });
+  db.workSchedule.create({
+    id: 1201203201,
+    open: "08:00:00",
+    close: "17:30:00",
+    weekday: "Sunday",
+    healthFacilityId: 12345678911,
+    status: true,
+  });
   db.paperSizeType.create({
     id: 1,
     paperSizeTypeName: "Khổ A4",

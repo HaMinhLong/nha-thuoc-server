@@ -83,8 +83,9 @@ db.paperSizeType = require("../models/paperSizeType.model")(
   sequelize,
   Sequelize
 );
+db.workSchedule = require("../models/workSchedule.model")(sequelize, Sequelize);
 
-// userGroup - printForm
+// paperSizeType - printForm
 db.paperSizeType.hasMany(db.printForm);
 db.printForm.belongsTo(db.paperSizeType);
 
@@ -149,6 +150,10 @@ db.medicalFacility.belongsTo(db.district);
 // ward - medicalFacility
 db.ward.hasMany(db.medicalFacility);
 db.medicalFacility.belongsTo(db.ward);
+
+// healthFacility - workSchedule
+db.healthFacility.hasMany(db.workSchedule);
+db.workSchedule.belongsTo(db.healthFacility);
 
 // province - place
 db.province.hasMany(db.place);
