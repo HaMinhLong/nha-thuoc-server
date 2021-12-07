@@ -136,6 +136,21 @@ initialData = (db) => {
     healthFacilityId: 12345678911,
     status: true,
   });
+  db.clinicType.create({
+    id: 1,
+    clinicTypeName: "BÁN THUỐC",
+    status: 1,
+  });
+  db.clinicType.create({
+    id: 2,
+    clinicTypeName: "KHÁM LÂM SÀNG",
+    status: 1,
+  });
+  db.clinicType.create({
+    id: 3,
+    clinicTypeName: "KHÁM CẬN LÂM SÀNG",
+    status: 1,
+  });
   db.paperSizeType.create({
     id: 1,
     paperSizeTypeName: "Khổ A4",
@@ -157,9 +172,67 @@ initialData = (db) => {
     status: 1,
   });
   db.printForm.create({
-    id: 12345678911,
+    id: 689,
+    printFormName: "MẪU XÉT NGHIỆM",
+    paperSizeTypeId: 1,
+    status: 1,
+  });
+  db.printForm.create({
+    id: 789,
+    printFormName: "MẪU X-QUANG",
+    paperSizeTypeId: 1,
+    status: 1,
+  });
+  db.printForm.create({
+    id: 889,
+    printFormName: "MẪU SIÊU ÂM THAI",
+    paperSizeTypeId: 1,
+    status: 1,
+  });
+  db.printForm.create({
+    id: 1089,
+    printFormName: "PHIẾU ĐIỆN TIM",
+    paperSizeTypeId: 1,
+    status: 1,
+  });
+  db.printForm.create({
+    id: 1189,
+    printFormName: "MẪU PHIẾU XÉT NGHIỆM",
+    paperSizeTypeId: 1,
+    status: 1,
+  });
+  db.printForm.create({
+    id: 1289,
+    printFormName: "MẪU PHIẾU X-QUANG",
+    paperSizeTypeId: 1,
+    status: 1,
+  });
+  db.printForm.create({
+    id: 1389,
+    printFormName: "MẪU PHIẾU SIÊU ÂM CHẨN ĐOÁN",
+    paperSizeTypeId: 1,
+    status: 1,
+  });
+  db.printForm.create({
+    id: 1489,
+    printFormName: "MẪU SIÊU ÂM TAI MŨI HỌNG",
+    paperSizeTypeId: 1,
+    status: 1,
+  });
+  db.printForm.create({
+    id: 1589,
     printFormName: "MẪU PHIẾU KẾT QUẢ LÂM SÀNG",
     paperSizeTypeId: 2,
+    status: 1,
+  });
+  db.clinicServicePackage.create({
+    id: 194974585981,
+    clinicServicePackageName: "Khám tổng thể",
+    time: "00:30:00",
+    sampleResults: "<p>Mẫu khám tổng thể</p>",
+    clinicTypeId: 3,
+    printFormId: 1589,
+    healthFacilityId: 12345678911,
     status: 1,
   });
   db.warehouse.create({
@@ -572,6 +645,24 @@ initialData = (db) => {
       menuName: "NT - Quản lý đơn vị tính",
       orderBy: 6,
       url: "/nt-unit",
+      icon: "",
+      parentId: 8974512578,
+      status: 1,
+    },
+    {
+      id: 7485621203,
+      menuName: "PK - Quản lý gói dịch vụ",
+      orderBy: 7,
+      url: "/clinic-service-package",
+      icon: "",
+      parentId: 8974512578,
+      status: 1,
+    },
+    {
+      id: 9654120201,
+      menuName: "PK - Quản lý dịch vụ",
+      orderBy: 8,
+      url: "/clinic-service",
       icon: "",
       parentId: 8974512578,
       status: 1,
@@ -1082,6 +1173,38 @@ initialData = (db) => {
       menuParentId: 8974512578,
       userGroupId: 12345678910,
       menuId: 5896321456,
+      isView: true,
+      isAdd: true,
+      isUpdate: true,
+      isDelete: true,
+      isBlock: true,
+      isApprove: true,
+      isReceipts: true,
+      isPrescription: true,
+      isResult: true,
+    },
+    {
+      id: 1114520212,
+      menuName: "PK - Quản lý gói dịch vụ",
+      menuParentId: 8974512578,
+      userGroupId: 12345678910,
+      menuId: 7485621203,
+      isView: true,
+      isAdd: true,
+      isUpdate: true,
+      isDelete: true,
+      isBlock: true,
+      isApprove: true,
+      isReceipts: true,
+      isPrescription: true,
+      isResult: true,
+    },
+    {
+      id: 2302012059,
+      menuName: "PK - Quản lý dịch vụ",
+      menuParentId: 8974512578,
+      userGroupId: 12345678910,
+      menuId: 9654120201,
       isView: true,
       isAdd: true,
       isUpdate: true,

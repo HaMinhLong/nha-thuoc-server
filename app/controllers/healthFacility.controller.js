@@ -128,6 +128,18 @@ const getOne = async (req, res) => {
     where: {
       id: id,
     },
+    include: [
+      {
+        model: Province,
+        required: true,
+        attributes: ["id", "provinceName"],
+      },
+      {
+        model: MedicalFacilityGroup,
+        required: true,
+        attributes: ["id", "medicalFacilityGroupName"],
+      },
+    ],
   })
     .then((healthFacility) => {
       res.status(200).json({

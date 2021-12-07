@@ -84,6 +84,23 @@ db.paperSizeType = require("../models/paperSizeType.model")(
   Sequelize
 );
 db.workSchedule = require("../models/workSchedule.model")(sequelize, Sequelize);
+db.clinicType = require("../models/clinicType.model")(sequelize, Sequelize);
+db.clinicServicePackage = require("../models/clinicServicePackage.model")(
+  sequelize,
+  Sequelize
+);
+
+// clinicType - clinicServicePackage
+db.clinicType.hasMany(db.clinicServicePackage);
+db.clinicServicePackage.belongsTo(db.clinicType);
+
+// printForm - clinicServicePackage
+db.printForm.hasMany(db.clinicServicePackage);
+db.clinicServicePackage.belongsTo(db.printForm);
+
+// healthFacility - clinicServicePackage
+db.healthFacility.hasMany(db.clinicServicePackage);
+db.clinicServicePackage.belongsTo(db.healthFacility);
 
 // paperSizeType - printForm
 db.paperSizeType.hasMany(db.printForm);
