@@ -89,6 +89,10 @@ db.clinicServicePackage = require("../models/clinicServicePackage.model")(
   sequelize,
   Sequelize
 );
+db.clinicService = require("../models/clinicService.model")(
+  sequelize,
+  Sequelize
+);
 
 // clinicType - clinicServicePackage
 db.clinicType.hasMany(db.clinicServicePackage);
@@ -101,6 +105,18 @@ db.clinicServicePackage.belongsTo(db.printForm);
 // healthFacility - clinicServicePackage
 db.healthFacility.hasMany(db.clinicServicePackage);
 db.clinicServicePackage.belongsTo(db.healthFacility);
+
+// clinicServicePackage - clinicService
+db.clinicServicePackage.hasMany(db.clinicService);
+db.clinicService.belongsTo(db.clinicServicePackage);
+
+// healthFacility - clinicService
+db.healthFacility.hasMany(db.clinicService);
+db.clinicService.belongsTo(db.healthFacility);
+
+// user - clinicService
+db.user.hasMany(db.clinicService);
+db.clinicService.belongsTo(db.user);
 
 // paperSizeType - printForm
 db.paperSizeType.hasMany(db.printForm);

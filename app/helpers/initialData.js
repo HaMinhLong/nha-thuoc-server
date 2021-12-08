@@ -6,6 +6,12 @@ initialData = (db) => {
     userGroupDescriptions: "",
     status: 1,
   });
+  db.userGroup.create({
+    id: 12345678911,
+    userGroupName: "Bác sĩ",
+    userGroupDescriptions: "",
+    status: 1,
+  });
   db.specialist.create({
     id: 78458965475,
     specialistName: "Răng hàm mặt",
@@ -357,6 +363,21 @@ initialData = (db) => {
     email: "haminhlong3@gmail.com",
     mobile: "0963339657",
     userGroupId: 12345678910,
+    provinceId: 78458965475,
+    districtId: 78454265475,
+    wardId: 78447865475,
+    address: "Thôn Đại Hạnh",
+    healthFacilityId: 12345678911,
+    status: 1,
+  });
+  db.user.create({
+    id: 45214524524,
+    username: "bs_minhduc",
+    fullName: "Bác sĩ Minh Đức",
+    password: bcrypt.hashSync("admin", 8),
+    email: "haminhduc3@gmail.com",
+    mobile: "0963339657",
+    userGroupId: 12345678911,
     provinceId: 78458965475,
     districtId: 78454265475,
     wardId: 78447865475,

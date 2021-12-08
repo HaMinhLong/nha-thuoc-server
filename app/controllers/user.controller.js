@@ -3,6 +3,9 @@ const User = db.user;
 const UserGroup = db.userGroup;
 const Config = db.config;
 const Province = db.province;
+const HealthFacilityUser = db.healthFacilityUser;
+const HealthFacility = db.healthFacility;
+
 const moment = require("moment");
 var bcrypt = require("bcryptjs");
 var nodemailer = require("nodemailer");
@@ -40,6 +43,7 @@ const getList = async (req, res) => {
   const fullName = filters.fullName || "";
   const email = filters.email || "";
   const mobile = filters.mobile || "";
+  const healthFacilityId = filters.healthFacilityId || "";
   const fromDate = filters.fromDate || "2021-01-01T14:06:48.000Z";
   const toDate = filters.toDate || moment();
   const size = ranges[1] - ranges[0];
@@ -73,6 +77,16 @@ const getList = async (req, res) => {
         model: Province,
         required: true,
         attributes: ["id", "provinceName"],
+      },
+      {
+        model: HealthFacility,
+        required: true,
+        where: {
+          [Op.and]: [
+            { id: { [Op.like]: "%" + healthFacilityId + "%" } },
+            { status: { [Op.like]: "%" + "1" + "%" } },
+          ],
+        },
       },
     ],
   };

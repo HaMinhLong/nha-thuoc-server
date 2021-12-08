@@ -1,6 +1,8 @@
 const db = require("../models");
+const ClinicService = db.clinicService;
 const ClinicServicePackage = db.clinicServicePackage;
-const ClinicType = db.clinicType;
+const User = db.user;
+
 const moment = require("moment");
 
 const Op = db.Sequelize.Op;
@@ -14,19 +16,20 @@ const getList = async (req, res) => {
     ? attributes.split(",")
     : [
         "id",
-        "clinicServicePackageName",
-        "clinicTypeId",
+        "clinicServiceName",
+        "clinicServicePackageId",
+        "price",
+        "description",
+        "userId",
         "healthFacilityId",
-        "printFormId",
-        "sampleResults",
-        "time",
         "status",
         "createdAt",
         "updatedAt",
       ];
   const status = filters.status || "";
-  const clinicServicePackageName = filters.clinicServicePackageName || "";
-  const clinicTypeId = filters.clinicTypeId || "";
+  const clinicServiceName = filters.clinicServiceName || "";
+  const clinicServicePackageId = filters.clinicServicePackageId || "";
+  const userId = filters.userId || "";
   const healthFacilityId = filters.healthFacilityId || "";
   const fromDate = filters.fromDate || "2021-01-01T14:06:48.000Z";
   const toDate = filters.toDate || moment();
@@ -38,11 +41,16 @@ const getList = async (req, res) => {
       [Op.and]: [
         { status: { [Op.like]: "%" + status + "%" } },
         {
-          clinicServicePackageName: {
-            [Op.like]: "%" + clinicServicePackageName + "%",
+          clinicServiceName: {
+            [Op.like]: "%" + clinicServiceName + "%",
           },
         },
-        { clinicTypeId: { [Op.like]: "%" + clinicTypeId + "%" } },
+        {
+          clinicServicePackageId: {
+            [Op.like]: "%" + clinicServicePackageId + "%",
+          },
+        },
+        { userId: { [Op.like]: "%" + userId + "%" } },
         { healthFacilityId: { [Op.like]: "%" + healthFacilityId + "%" } },
       ],
       createdAt: {
@@ -55,14 +63,19 @@ const getList = async (req, res) => {
     limit: size,
     include: [
       {
-        model: ClinicType,
+        model: ClinicServicePackage,
         required: true,
-        attributes: ["id", "clinicTypeName"],
+        attributes: ["id", "clinicServicePackageName"],
+      },
+      {
+        model: User,
+        required: true,
+        attributes: ["id", "fullName"],
       },
     ],
   };
 
-  ClinicServicePackage.findAndCountAll(options)
+  ClinicService.findAndCountAll(options)
     .then((result) => {
       res.status(200).json({
         results: {
@@ -89,15 +102,15 @@ const getList = async (req, res) => {
 
 const getOne = async (req, res) => {
   const { id } = req.params;
-  ClinicServicePackage.findOne({
+  ClinicService.findOne({
     where: {
       id: id,
     },
   })
-    .then((clinicServicePackage) => {
+    .then((clinicService) => {
       res.status(200).json({
         results: {
-          list: clinicServicePackage,
+          list: clinicService,
           pagination: [],
         },
         success: true,
@@ -109,7 +122,7 @@ const getOne = async (req, res) => {
       res.status(200).json({
         success: true,
         error: err.message,
-        message: "Xảy ra lỗi khi lấy thông tin gói dịch vụ!",
+        message: "Xảy ra lỗi khi lấy thông tin dịch vụ!",
       });
     });
 };
@@ -117,59 +130,59 @@ const getOne = async (req, res) => {
 const create = async (req, res) => {
   const {
     id,
-    clinicServicePackageName,
-    time,
-    sampleResults,
-    clinicTypeId,
-    printFormId,
+    clinicServiceName,
+    price,
+    description,
+    clinicServicePackageId,
+    userId,
     healthFacilityId,
     status,
   } = req.body;
-  const clinicServicePackage = await ClinicServicePackage.findOne({
+  const clinicService = await ClinicService.findOne({
     where: {
       [Op.and]: [
-        { clinicServicePackageName: clinicServicePackageName },
+        { clinicServiceName: clinicServiceName },
         { healthFacilityId: healthFacilityId },
       ],
     },
   });
 
-  if (clinicServicePackage) {
+  if (clinicService) {
     res.status(200).json({
       success: false,
-      error: "Gói dịch vụ đã tồn tại!",
-      message: "Gói dịch vụ đã tồn tại!",
+      error: "Dịch vụ đã tồn tại!",
+      message: "Dịch vụ đã tồn tại!",
     });
   } else {
-    ClinicServicePackage.create({
+    ClinicService.create({
       id:
         id ||
         Math.floor(Math.random() * (100000000000 - 1000000000 + 1)) +
           100000000000,
-      clinicServicePackageName,
-      time,
-      sampleResults,
-      clinicTypeId,
-      printFormId,
+      clinicServiceName,
+      price,
+      description,
+      clinicServicePackageId,
+      userId,
       healthFacilityId,
       status,
     })
-      .then((clinicServicePackage) => {
+      .then((clinicService) => {
         res.status(200).json({
           results: {
-            list: clinicServicePackage,
+            list: clinicService,
             pagination: [],
           },
           success: true,
           error: "",
-          message: "Tạo mới gói dịch vụ thành công!",
+          message: "Tạo mới dịch vụ thành công!",
         });
       })
       .catch((err) => {
         res.status(200).json({
           success: false,
           error: err.message,
-          message: "Xảy ra lỗi khi tạo mới gói dịch vụ!",
+          message: "Xảy ra lỗi khi tạo mới dịch vụ!",
         });
       });
   }
@@ -177,41 +190,38 @@ const create = async (req, res) => {
 const updateRecord = async (req, res) => {
   const { id } = req.params;
   const {
-    clinicServicePackageName,
-    clinicServicePackageNameOld,
-    time,
-    sampleResults,
-    clinicTypeId,
-    printFormId,
+    clinicServiceName,
+    clinicServiceNameOld,
+    price,
+    description,
+    clinicServicePackageId,
+    userId,
     healthFacilityId,
     status,
   } = req.body;
-  const clinicServicePackage = await ClinicServicePackage.findOne({
+  const clinicService = await ClinicService.findOne({
     where: {
       [Op.and]: [
-        { clinicServicePackageName: clinicServicePackageName },
+        { clinicServiceName: clinicServiceName },
         { healthFacilityId: healthFacilityId },
       ],
     },
   });
-  if (
-    clinicServicePackage &&
-    clinicServicePackageNameOld !== clinicServicePackageName
-  ) {
+  if (clinicService && clinicServiceNameOld !== clinicServiceName) {
     res.status(200).json({
       success: false,
-      error: "Gói dịch vụ đã tồn tại!",
-      message: "Gói dịch vụ đã tồn tại!",
+      error: "Dịch vụ đã tồn tại!",
+      message: "Dịch vụ đã tồn tại!",
     });
   } else {
-    ClinicServicePackage.update(
+    ClinicService.update(
       {
         status: status,
-        clinicServicePackageName: clinicServicePackageName,
-        time: time,
-        sampleResults: sampleResults,
-        clinicTypeId: clinicTypeId,
-        printFormId: printFormId,
+        clinicServiceName: clinicServiceName,
+        price: price,
+        description: description,
+        clinicServicePackageId: clinicServicePackageId,
+        userId: userId,
         healthFacilityId: healthFacilityId,
       },
       {
@@ -220,22 +230,22 @@ const updateRecord = async (req, res) => {
         },
       }
     )
-      .then((clinicServicePackage) => {
+      .then((clinicService) => {
         res.status(200).json({
           results: {
-            list: clinicServicePackage,
+            list: clinicService,
             pagination: [],
           },
           success: true,
           error: "",
-          message: "Cập nhật gói dịch vụ thành công!",
+          message: "Cập nhật dịch vụ thành công!",
         });
       })
       .catch((err) => {
         res.status(200).json({
           success: false,
           error: err.message,
-          message: "Xảy ra lỗi khi cập nhật gói dịch vụ!",
+          message: "Xảy ra lỗi khi cập nhật dịch vụ!",
         });
       });
   }
@@ -243,7 +253,7 @@ const updateRecord = async (req, res) => {
 const updateStatus = async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
-  ClinicServicePackage.update(
+  ClinicService.update(
     { status: status },
     {
       where: {
@@ -251,10 +261,10 @@ const updateStatus = async (req, res) => {
       },
     }
   )
-    .then((clinicServicePackage) => {
+    .then((clinicService) => {
       res.status(200).json({
         results: {
-          list: clinicServicePackage,
+          list: clinicService,
           pagination: [],
         },
         success: true,
@@ -273,27 +283,27 @@ const updateStatus = async (req, res) => {
 
 const deleteRecord = async (req, res) => {
   const { id } = req.params;
-  ClinicServicePackage.destroy({
+  ClinicService.destroy({
     where: {
       id: id,
     },
   })
-    .then((clinicServicePackage) => {
+    .then((clinicService) => {
       res.status(200).json({
         results: {
-          list: clinicServicePackage,
+          list: clinicService,
           pagination: [],
         },
         success: true,
         error: "",
-        message: "Xóa gói dịch vụ thành công!",
+        message: "Xóa dịch vụ thành công!",
       });
     })
     .catch((err) => {
       res.status(200).json({
         success: false,
         message: err.message,
-        message: "Xảy ra lôi khi xóa gói dịch vụ!",
+        message: "Xảy ra lôi khi xóa dịch vụ!",
       });
     });
 };
