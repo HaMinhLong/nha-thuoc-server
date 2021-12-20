@@ -93,6 +93,44 @@ db.clinicService = require("../models/clinicService.model")(
   sequelize,
   Sequelize
 );
+db.receipt = require("../models/receipt.model")(sequelize, Sequelize);
+db.receiptCode = require("../models/receiptCode.model")(sequelize, Sequelize);
+db.receiptMedicine = require("./receiptMedicine.model")(sequelize, Sequelize);
+
+// receipt - medicine
+db.receipt.belongsToMany(db.medicine, {
+  through: "receiptMedicines",
+});
+db.medicine.belongsToMany(db.receipt, {
+  through: "receiptMedicines",
+});
+// unit - receiptMedicine
+db.unit.hasMany(db.receiptMedicine);
+db.receiptMedicine.belongsTo(db.unit);
+
+// healthFacility - receiptCode
+db.healthFacility.hasMany(db.receiptCode);
+db.receiptCode.belongsTo(db.healthFacility);
+
+// user - receipt
+db.user.hasMany(db.receipt);
+db.receipt.belongsTo(db.user);
+
+// paymentMethod - receipt
+db.paymentMethod.hasMany(db.receipt);
+db.receipt.belongsTo(db.paymentMethod);
+
+// warehouse - receipt
+db.warehouse.hasMany(db.receipt);
+db.receipt.belongsTo(db.warehouse);
+
+// supplier - receipt
+db.supplier.hasMany(db.receipt);
+db.receipt.belongsTo(db.supplier);
+
+// healthFacility - receipt
+db.healthFacility.hasMany(db.receipt);
+db.receipt.belongsTo(db.healthFacility);
 
 // clinicType - clinicServicePackage
 db.clinicType.hasMany(db.clinicServicePackage);

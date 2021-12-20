@@ -6,6 +6,7 @@ const Ward = db.ward;
 const WorkSchedule = db.workSchedule;
 const MedicalFacilityGroup = db.medicalFacilityGroup;
 const HealthFacilitySpecialist = db.healthFacilitySpecialist;
+const ReceiptCode = db.receiptCode;
 
 const moment = require("moment");
 
@@ -185,6 +186,57 @@ const createWorkSchedule = (id) => {
   });
 };
 
+const createReceiptCode = (id) => {
+  ReceiptCode.create({
+    id:
+      Math.floor(Math.random() * (100000000000 - 1000000000 + 1)) +
+      100000000000,
+    receiptCode: 1,
+    healthFacilityId: id,
+    formType: 1,
+  });
+  ReceiptCode.create({
+    id:
+      Math.floor(Math.random() * (100000000000 - 1000000000 + 1)) +
+      100000000000,
+    receiptCode: 2,
+    healthFacilityId: id,
+    formType: 1,
+  });
+  ReceiptCode.create({
+    id:
+      Math.floor(Math.random() * (100000000000 - 1000000000 + 1)) +
+      100000000000,
+    receiptCode: 1,
+    healthFacilityId: id,
+    formType: 3,
+  });
+  ReceiptCode.create({
+    id:
+      Math.floor(Math.random() * (100000000000 - 1000000000 + 1)) +
+      100000000000,
+    receiptCode: 1,
+    healthFacilityId: id,
+    formType: 4,
+  });
+  ReceiptCode.create({
+    id:
+      Math.floor(Math.random() * (100000000000 - 1000000000 + 1)) +
+      100000000000,
+    receiptCode: 1,
+    healthFacilityId: id,
+    formType: 5,
+  });
+  ReceiptCode.create({
+    id:
+      Math.floor(Math.random() * (100000000000 - 1000000000 + 1)) +
+      100000000000,
+    receiptCode: 1,
+    healthFacilityId: id,
+    formType: 6,
+  });
+};
+
 const create = async (req, res) => {
   const {
     healthFacilityName,
@@ -233,6 +285,7 @@ const create = async (req, res) => {
     })
       .then((healthFacility) => {
         createWorkSchedule(healthFacilityId);
+        createReceiptCode(healthFacilityId);
         res.status(200).json({
           results: {
             list: healthFacility,
@@ -361,6 +414,11 @@ const deleteRecord = async (req, res) => {
     },
   });
   WorkSchedule.destroy({
+    where: {
+      healthFacilityId: id,
+    },
+  });
+  ReceiptCode.destroy({
     where: {
       healthFacilityId: id,
     },
