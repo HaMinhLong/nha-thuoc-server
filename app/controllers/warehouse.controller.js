@@ -21,7 +21,6 @@ const getList = async (req, res) => {
         "districtId",
         "wardId",
         "address",
-        "healthFacilityId",
         "status",
         "createdAt",
         "updatedAt",
@@ -31,7 +30,6 @@ const getList = async (req, res) => {
   const provinceId = filters.provinceId || "";
   const districtId = filters.districtId || "";
   const wardId = filters.wardId || "";
-  const healthFacilityId = filters.healthFacilityId || "";
   const fromDate = filters.fromDate || "2021-01-01T14:06:48.000Z";
   const toDate = filters.toDate || moment();
   const size = ranges[1] - ranges[0];
@@ -45,7 +43,6 @@ const getList = async (req, res) => {
         { provinceId: { [Op.like]: "%" + provinceId + "%" } },
         { districtId: { [Op.like]: "%" + districtId + "%" } },
         { wardId: { [Op.like]: "%" + wardId + "%" } },
-        { healthFacilityId: { [Op.like]: "%" + healthFacilityId + "%" } },
       ],
       createdAt: {
         [Op.between]: [fromDate, toDate],
@@ -127,22 +124,11 @@ const getOne = async (req, res) => {
 };
 
 const create = async (req, res) => {
-  const {
-    id,
-    warehouseName,
-    provinceId,
-    districtId,
-    wardId,
-    address,
-    healthFacilityId,
-    status,
-  } = req.body;
+  const { id, warehouseName, provinceId, districtId, wardId, address, status } =
+    req.body;
   const warehouse = await Warehouse.findOne({
     where: {
-      [Op.and]: [
-        { warehouseName: warehouseName },
-        { healthFacilityId: healthFacilityId },
-      ],
+      [Op.and]: [{ warehouseName: warehouseName }],
     },
   });
 
@@ -163,7 +149,6 @@ const create = async (req, res) => {
       districtId,
       wardId,
       address,
-      healthFacilityId,
       status,
     })
       .then((warehouse) => {
@@ -195,15 +180,11 @@ const updateRecord = async (req, res) => {
     districtId,
     wardId,
     address,
-    healthFacilityId,
     status,
   } = req.body;
   const warehouse = await Warehouse.findOne({
     where: {
-      [Op.and]: [
-        { warehouseName: warehouseName },
-        { healthFacilityId: healthFacilityId },
-      ],
+      [Op.and]: [{ warehouseName: warehouseName }],
     },
   });
   if (warehouse && warehouseNameOld !== warehouseName) {
@@ -220,7 +201,6 @@ const updateRecord = async (req, res) => {
         districtId: districtId,
         wardId: wardId,
         address: address,
-        healthFacilityId: healthFacilityId,
         status: status,
       },
       {

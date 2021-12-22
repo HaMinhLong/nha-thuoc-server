@@ -32,11 +32,6 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true,
       field: "address",
     },
-    healthFacilityId: {
-      type: DataTypes.BIGINT,
-      allowNull: false,
-      field: "healthFacilityId",
-    },
     status: {
       type: DataTypes.INTEGER,
       allowNull: false,

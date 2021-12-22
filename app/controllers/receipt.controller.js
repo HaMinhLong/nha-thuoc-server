@@ -63,6 +63,14 @@ const getList = async (req, res) => {
         required: true,
         attributes: ["id", "supplierName"],
       },
+      {
+        model: Medicine,
+        required: true,
+        attributes: ["id", "medicineName"],
+        through: {
+          attributes: ["id", "total"],
+        },
+      },
     ],
   };
 

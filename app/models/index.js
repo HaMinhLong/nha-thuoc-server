@@ -78,6 +78,7 @@ db.apothecary = require("../models/apothecary.model")(sequelize, Sequelize);
 db.package = require("../models/package.model")(sequelize, Sequelize);
 db.unit = require("../models/unit.model")(sequelize, Sequelize);
 db.warehouse = require("../models/warehouse.model")(sequelize, Sequelize);
+db.warehouseUser = require("./warehouseUser.model")(sequelize, Sequelize);
 db.printForm = require("../models/printForm.model")(sequelize, Sequelize);
 db.paperSizeType = require("../models/paperSizeType.model")(
   sequelize,
@@ -288,9 +289,13 @@ db.medicine.belongsTo(db.healthFacility);
 db.medicine.belongsToMany(db.unit, { through: "medicineUnits" });
 db.unit.belongsToMany(db.medicine, { through: "medicineUnits" });
 
-// healthFacility - warehouse
-db.healthFacility.hasMany(db.warehouse);
-db.warehouse.belongsTo(db.healthFacility);
+// user - warehouse
+db.user.belongsToMany(db.warehouse, {
+  through: "warehouseUsers",
+});
+db.warehouse.belongsToMany(db.user, {
+  through: "warehouseUsers",
+});
 // province - warehouse
 db.province.hasMany(db.warehouse);
 db.warehouse.belongsTo(db.province);

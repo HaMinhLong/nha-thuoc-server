@@ -284,8 +284,12 @@ initialData = (db) => {
     districtId: 78454265475,
     wardId: 78447865475,
     address: "Thôn Đại Hạnh",
-    healthFacilityId: 12345678911,
     status: 1,
+  });
+  db.warehouseUser.create({
+    id: 85207416123,
+    warehouseId: 12345678911,
+    userId: 12345678911,
   });
   db.supplierGroup.create({
     id: 58458965475,
@@ -799,7 +803,7 @@ initialData = (db) => {
       id: 30201202369,
       menuName: "Quản lý phiếu Bán Thuốc/Vật tư",
       orderBy: 2,
-      url: "/nt-issues",
+      url: "/nt-medicine-issue",
       icon: "",
       parentId: 2003215520,
       status: 1,
@@ -817,7 +821,7 @@ initialData = (db) => {
       id: 50021023966,
       menuName: "Quản lý chuyển Thuốc/Vật tư",
       orderBy: 4,
-      url: "/nt-issues-transfer",
+      url: "/nt-medicine-transfer",
       icon: "",
       parentId: 2003215520,
       status: 1,
