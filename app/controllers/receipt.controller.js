@@ -3,6 +3,7 @@ const Receipt = db.receipt;
 const Supplier = db.supplier;
 const Medicine = db.medicine;
 const ReceiptMedicine = db.receiptMedicine;
+const WarehouseMedicine = db.warehouseMedicine;
 
 const moment = require("moment");
 
@@ -193,6 +194,21 @@ const create = async (req, res) => {
         receiptId: receiptId,
       };
     });
+    const warehouseMedicineCreate = receiptMedicineAdd?.map((item) => {
+      return {
+        id:
+          Math.floor(Math.random() * (100000000000 - 1000000000 + 1)) +
+          100000000000,
+        exchange: Number(
+          item?.medicineUnits?.find(
+            (it) => it.unitId === item?.receiptMedicines?.unitId
+          )?.amount
+        ),
+        inStock: item.receiptMedicines.amount,
+        medicineId: item.id,
+        warehouseId: warehouseId,
+      };
+    });
     Receipt.create({
       id: receiptId,
       receiptCode,
@@ -208,6 +224,7 @@ const create = async (req, res) => {
     })
       .then((receipt) => {
         ReceiptMedicine.bulkCreate(receiptMedicineCreate);
+        WarehouseMedicine.bulkCreate(warehouseMedicineCreate);
         res.status(200).json({
           results: {
             list: receipt,

@@ -4,6 +4,7 @@ const MedicineUnit = db.medicineUnit;
 const MedicineType = db.medicineType;
 const Producer = db.producer;
 const Package = db.package;
+const WarehouseUser = db.warehouseUser;
 const moment = require("moment");
 
 const Op = db.Sequelize.Op;
@@ -342,6 +343,11 @@ const updateStatus = async (req, res) => {
 
 const deleteRecord = async (req, res) => {
   const { id } = req.params;
+  WarehouseUser.destroy({
+    where: {
+      medicineId: id,
+    },
+  });
   Medicine.destroy({
     where: {
       id: id,

@@ -97,6 +97,18 @@ db.clinicService = require("../models/clinicService.model")(
 db.receipt = require("../models/receipt.model")(sequelize, Sequelize);
 db.receiptCode = require("../models/receiptCode.model")(sequelize, Sequelize);
 db.receiptMedicine = require("./receiptMedicine.model")(sequelize, Sequelize);
+db.warehouseMedicine = require("./warehouseMedicine.model")(
+  sequelize,
+  Sequelize
+);
+
+// warehouse - medicine
+db.warehouse.belongsToMany(db.medicine, {
+  through: "warehouseMedicines",
+});
+db.medicine.belongsToMany(db.warehouse, {
+  through: "warehouseMedicines",
+});
 
 // receipt - medicine
 db.receipt.belongsToMany(db.medicine, {

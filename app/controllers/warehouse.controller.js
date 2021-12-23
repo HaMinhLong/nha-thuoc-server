@@ -2,6 +2,7 @@ const db = require("../models");
 const Warehouse = db.warehouse;
 const Province = db.province;
 const District = db.district;
+const WarehouseUser = db.warehouseUser;
 const Ward = db.ward;
 const moment = require("moment");
 
@@ -262,6 +263,11 @@ const updateStatus = async (req, res) => {
 
 const deleteRecord = async (req, res) => {
   const { id } = req.params;
+  WarehouseUser.destroy({
+    where: {
+      warehouseId: id,
+    },
+  });
   Warehouse.destroy({
     where: {
       id: id,
