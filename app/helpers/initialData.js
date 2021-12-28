@@ -94,31 +94,31 @@ initialData = (db) => {
   });
   db.receiptCode.create({
     id: 12036657889,
-    receiptCode: 1,
+    receiptCode: 2,
     formType: 2,
     healthFacilityId: 12345678911,
   });
   db.receiptCode.create({
     id: 41002188962,
-    receiptCode: 1,
+    receiptCode: 2,
     formType: 3,
     healthFacilityId: 12345678911,
   });
   db.receiptCode.create({
     id: 10045889652,
-    receiptCode: 1,
+    receiptCode: 2,
     formType: 4,
     healthFacilityId: 12345678911,
   });
   db.receiptCode.create({
     id: 30056641259,
-    receiptCode: 1,
+    receiptCode: 2,
     formType: 5,
     healthFacilityId: 12345678911,
   });
   db.receiptCode.create({
     id: 20014589654,
-    receiptCode: 1,
+    receiptCode: 2,
     formType: 6,
     healthFacilityId: 12345678911,
   });
@@ -297,6 +297,7 @@ initialData = (db) => {
     healthFacilityId: 12345678911,
     status: 1,
   });
+
   db.supplier.create({
     id: 28448165375,
     supplierName: "NCC thực phẩm chức năng Minh Đức",
@@ -335,13 +336,10 @@ initialData = (db) => {
   db.customer.create({
     id: 28448165375,
     customerName: "Hà Minh Long",
-    mobile: 0963339657,
-    dateOfBirth: null,
+    mobile: "0963339657",
+    dateOfBirth: "2000-05-29T09:57:30.735Z",
     gender: 1,
     email: "haminhlong3@gmail.com",
-    provinceId: 78458965475,
-    districtId: 78454265475,
-    wardId: 78447865475,
     address: "",
     customerGroupId: 58458965475,
     healthFacilityId: 12345678911,
@@ -463,6 +461,41 @@ initialData = (db) => {
     total: 10450000,
     unitId: 28448165375,
     receiptId: 164031660965,
+    medicineId: 28448165375,
+  });
+  db.warehouseMedicine.create({
+    id: 58458965475,
+    exchange: 1,
+    inStock: 100,
+    medicineId: 28448165375,
+    warehouseId: 12345678911,
+    unitId: 28448165375,
+  });
+  db.medicineIssue.create({
+    id: 146167196929,
+    medicineIssueCode: "DKMDPTBT1",
+    customerId: 28448165375,
+    userId: 12345678911,
+    paymentMethodId: 78458965475,
+    debit: false,
+    description: "",
+    warehouseId: 12345678911,
+    healthFacilityId: 12345678911,
+    status: 1,
+  });
+  db.medicineIssueMedicine.create({
+    id: 146167196929,
+    price: 80000,
+    amount: 2,
+    retail: false,
+    description: "",
+    discount: 0,
+    discountType: 1,
+    tax: 0,
+    taxType: 1,
+    total: 160000,
+    unitId: 28448165375,
+    medicineIssueId: 146167196929,
     medicineId: 28448165375,
   });
   db.menu.bulkCreate([

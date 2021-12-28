@@ -283,6 +283,7 @@ const updateRecord = async (req, res) => {
             {
               retailPrice: medicineUnitUpdate[index].retailPrice,
               wholesalePrice: medicineUnitUpdate[index].wholesalePrice,
+              amount: medicineUnitUpdate[index].amount,
             },
             {
               where: {

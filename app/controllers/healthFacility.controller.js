@@ -136,6 +136,16 @@ const getOne = async (req, res) => {
         attributes: ["id", "provinceName"],
       },
       {
+        model: District,
+        required: true,
+        attributes: ["id", "districtName"],
+      },
+      {
+        model: Ward,
+        required: true,
+        attributes: ["id", "wardName"],
+      },
+      {
         model: MedicalFacilityGroup,
         required: true,
         attributes: ["id", "medicalFacilityGroupName"],

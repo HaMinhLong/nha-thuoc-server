@@ -206,6 +206,7 @@ const create = async (req, res) => {
         ),
         inStock: item.receiptMedicines.amount,
         medicineId: item.id,
+        unitId: item.receiptMedicines.unitId,
         warehouseId: warehouseId,
       };
     });

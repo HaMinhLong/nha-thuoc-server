@@ -101,6 +101,38 @@ db.warehouseMedicine = require("./warehouseMedicine.model")(
   sequelize,
   Sequelize
 );
+db.medicineIssueMedicine = require("./medicineIssueMedicine.model")(
+  sequelize,
+  Sequelize
+);
+db.medicineIssue = require("./medicineIssue.model")(sequelize, Sequelize);
+
+// medicineIssue - medicine
+db.medicineIssue.belongsToMany(db.medicine, {
+  through: "medicineIssueMedicines",
+});
+db.medicine.belongsToMany(db.medicineIssue, {
+  through: "medicineIssueMedicines",
+});
+// unit - medicineIssueMedicine
+db.unit.hasMany(db.medicineIssueMedicine);
+db.medicineIssueMedicine.belongsTo(db.unit);
+
+// warehouse - medicineIssue
+db.warehouse.hasMany(db.medicineIssue);
+db.medicineIssue.belongsTo(db.warehouse);
+// paymentMethod - medicineIssue
+db.paymentMethod.hasMany(db.medicineIssue);
+db.medicineIssue.belongsTo(db.paymentMethod);
+// user - medicineIssue
+db.user.hasMany(db.medicineIssue);
+db.medicineIssue.belongsTo(db.user);
+// customer - medicineIssue
+db.customer.hasMany(db.medicineIssue);
+db.medicineIssue.belongsTo(db.customer);
+// healthFacility - medicineIssue
+db.healthFacility.hasMany(db.medicineIssue);
+db.medicineIssue.belongsTo(db.healthFacility);
 
 // warehouse - medicine
 db.warehouse.belongsToMany(db.medicine, {
@@ -109,6 +141,9 @@ db.warehouse.belongsToMany(db.medicine, {
 db.medicine.belongsToMany(db.warehouse, {
   through: "warehouseMedicines",
 });
+// unit - warehouseMedicine
+db.unit.hasMany(db.warehouseMedicine);
+db.warehouseMedicine.belongsTo(db.unit);
 
 // receipt - medicine
 db.receipt.belongsToMany(db.medicine, {

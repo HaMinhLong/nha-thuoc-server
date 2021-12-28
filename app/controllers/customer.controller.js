@@ -30,6 +30,7 @@ const getList = async (req, res) => {
   const customerName = filters.customerName || "";
   const customerGroupId = filters.customerGroupId || "";
   const gender = filters.gender || "";
+  const mobile = filters.mobile || "";
   const healthFacilityId = filters.healthFacilityId || "";
   const fromDate = filters.fromDate || "2021-01-01T14:06:48.000Z";
   const toDate = filters.toDate || moment();
@@ -43,6 +44,7 @@ const getList = async (req, res) => {
         { customerName: { [Op.like]: "%" + customerName + "%" } },
         { customerGroupId: { [Op.like]: "%" + customerGroupId + "%" } },
         { gender: { [Op.like]: "%" + gender + "%" } },
+        { mobile: { [Op.like]: "%" + mobile + "%" } },
         { healthFacilityId: { [Op.like]: "%" + healthFacilityId + "%" } },
       ],
       createdAt: {
@@ -131,6 +133,7 @@ const create = async (req, res) => {
     where: {
       [Op.and]: [
         { customerName: customerName },
+        { mobile: mobile },
         { healthFacilityId: healthFacilityId },
       ],
     },
