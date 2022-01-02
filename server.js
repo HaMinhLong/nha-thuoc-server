@@ -99,6 +99,7 @@ require("./app/routes/warehouseUser.routes")(app);
 require("./app/routes/medicineIssue.routes")(app);
 require("./app/routes/medicineIssueMedicine.routes")(app);
 require("./app/routes/warehouseMedicine.routes")(app);
+require("./app/routes/consumable.routes")(app);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;

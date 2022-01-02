@@ -188,7 +188,6 @@ const create = async (req, res) => {
       ],
     },
   });
-  const warehouseMedicine = [];
   const MedicineIssueMedicineAdd = medicines?.filter((item) => item.flag < 0);
   const MedicineIssueMedicineCreate = MedicineIssueMedicineAdd?.map((item) => {
     return {

@@ -44,7 +44,7 @@ const getList = async (req, res) => {
   var options = {
     where: {
       [Op.and]: [
-        { status: { [Op.like]: "%" + status + "%" } },
+        { status: { [Op.like]: "%" + 1 + "%" } },
         { healthFacilityId: { [Op.like]: "%" + healthFacilityId + "%" } },
       ],
       createdAt: {

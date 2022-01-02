@@ -106,6 +106,34 @@ db.medicineIssueMedicine = require("./medicineIssueMedicine.model")(
   Sequelize
 );
 db.medicineIssue = require("./medicineIssue.model")(sequelize, Sequelize);
+db.consumable = require("./consumable.model")(sequelize, Sequelize);
+db.consumableMedicine = require("./consumableMedicine.model")(
+  sequelize,
+  Sequelize
+);
+
+// consumable - medicine
+db.consumable.belongsToMany(db.medicine, {
+  through: "consumableMedicines",
+});
+db.medicine.belongsToMany(db.consumable, {
+  through: "consumableMedicines",
+});
+// warehouse - consumable
+db.warehouse.hasMany(db.consumable);
+db.consumable.belongsTo(db.warehouse);
+// user - consumable
+db.user.hasMany(db.consumable);
+db.consumable.belongsTo(db.user);
+// consumable - consumableMedicine
+db.consumable.hasMany(db.consumableMedicine);
+db.consumableMedicine.belongsTo(db.consumable);
+// medicine - consumableMedicine
+db.medicine.hasMany(db.consumableMedicine);
+db.consumableMedicine.belongsTo(db.medicine);
+// unit - consumableMedicine
+db.unit.hasMany(db.consumableMedicine);
+db.consumableMedicine.belongsTo(db.unit);
 
 // medicineIssue - medicine
 db.medicineIssue.belongsToMany(db.medicine, {
