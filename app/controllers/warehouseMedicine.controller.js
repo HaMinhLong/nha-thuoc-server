@@ -62,6 +62,8 @@ const getList = async (req, res) => {
         through: {
           where: {
             warehouseId: { [Op.like]: "%" + warehouseId + "%" },
+
+            inStock: { [Op.gt]: 0 },
           },
         },
       },
