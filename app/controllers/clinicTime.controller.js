@@ -104,12 +104,7 @@ const getList = async (req, res) => {
                   ordinalNumber: index,
                   hourFrame: Moment(timeSlots[index]).format("HH:mm:ss"),
                   clinicServiceId: Number(clinicServiceId),
-                  createdAt: Moment().set({
-                    hour: 0,
-                    minute: 0,
-                    second: 0,
-                    millisecond: 0,
-                  }),
+                  createdAt: fromDate,
                 });
               }
               if (clinicTimeAdd.length > 0) {
