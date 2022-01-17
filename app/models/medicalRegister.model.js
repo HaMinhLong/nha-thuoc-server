@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-  const ClinicService = sequelize.define("clinicServices", {
+  const MedicalRegister = sequelize.define("medicalRegisters", {
     id: {
       type: DataTypes.BIGINT,
       allowNull: false,
@@ -7,40 +7,45 @@ module.exports = (sequelize, DataTypes) => {
       autoIncrement: true,
       field: "id",
     },
-    clinicServiceName: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      field: "clinicServiceName",
-    },
-    time: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      field: "time",
-    },
-    price: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      field: "price",
-    },
-    description: {
-      type: DataTypes.STRING,
-      allowNull: true,
-      field: "description",
-    },
-    clinicServicePackageId: {
+    clinicServiceId: {
       type: DataTypes.BIGINT,
       allowNull: false,
-      field: "clinicServicePackageId",
+      field: "clinicServiceId",
+    },
+    date: {
+      type: DataTypes.DATEONLY,
+      allowNull: false,
+      field: "date",
+    },
+    customerId: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
+      field: "customerId",
+    },
+    contactChannel: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: "contactChannel",
     },
     userId: {
       type: DataTypes.BIGINT,
       allowNull: false,
       field: "userId",
     },
+    description: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "description",
+    },
     healthFacilityId: {
       type: DataTypes.BIGINT,
       allowNull: false,
       field: "healthFacilityId",
+    },
+    clinicTimeId: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
+      field: "clinicTimeId",
     },
     status: {
       type: DataTypes.INTEGER,
@@ -48,6 +53,5 @@ module.exports = (sequelize, DataTypes) => {
       field: "status",
     },
   });
-
-  return ClinicService;
+  return MedicalRegister;
 };

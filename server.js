@@ -101,6 +101,8 @@ require("./app/routes/medicineIssueMedicine.routes")(app);
 require("./app/routes/warehouseMedicine.routes")(app);
 require("./app/routes/consumable.routes")(app);
 require("./app/routes/medicineTransfer.routes")(app);
+require("./app/routes/clinicTime.routes")(app);
+require("./app/routes/medicalRegister.routes")(app);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;

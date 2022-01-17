@@ -19,7 +19,6 @@ const getList = async (req, res) => {
         "healthFacilityId",
         "printFormId",
         "sampleResults",
-        "time",
         "status",
         "createdAt",
         "updatedAt",
@@ -118,7 +117,6 @@ const create = async (req, res) => {
   const {
     id,
     clinicServicePackageName,
-    time,
     sampleResults,
     clinicTypeId,
     printFormId,
@@ -147,7 +145,6 @@ const create = async (req, res) => {
         Math.floor(Math.random() * (100000000000 - 1000000000 + 1)) +
           100000000000,
       clinicServicePackageName,
-      time,
       sampleResults,
       clinicTypeId,
       printFormId,
@@ -179,7 +176,6 @@ const updateRecord = async (req, res) => {
   const {
     clinicServicePackageName,
     clinicServicePackageNameOld,
-    time,
     sampleResults,
     clinicTypeId,
     printFormId,
@@ -208,7 +204,6 @@ const updateRecord = async (req, res) => {
       {
         status: status,
         clinicServicePackageName: clinicServicePackageName,
-        time: time,
         sampleResults: sampleResults,
         clinicTypeId: clinicTypeId,
         printFormId: printFormId,

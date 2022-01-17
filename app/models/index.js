@@ -116,6 +116,28 @@ db.medicineTransferMedicine = require("./medicineTransferMedicine.model")(
   sequelize,
   Sequelize
 );
+db.clinicTime = require("./clinicTime.model")(sequelize, Sequelize);
+db.medicalRegister = require("./medicalRegister.model")(sequelize, Sequelize);
+
+// clinicTime - medicalRegister
+db.clinicTime.hasMany(db.medicalRegister);
+db.medicalRegister.belongsTo(db.clinicTime);
+// clinicService - medicalRegister
+db.clinicService.hasMany(db.medicalRegister);
+db.medicalRegister.belongsTo(db.clinicService);
+// customer - medicalRegister
+db.customer.hasMany(db.medicalRegister);
+db.medicalRegister.belongsTo(db.customer);
+// user - medicalRegister
+db.user.hasMany(db.medicalRegister);
+db.medicalRegister.belongsTo(db.user);
+// healthFacility - medicalRegister
+db.healthFacility.hasMany(db.medicalRegister);
+db.medicalRegister.belongsTo(db.healthFacility);
+
+// clinicService - clinicTime
+db.clinicService.hasMany(db.clinicTime);
+db.clinicTime.belongsTo(db.clinicService);
 
 // healthFacility - medicineTransfer
 db.healthFacility.hasMany(db.medicineTransfer);
@@ -184,9 +206,11 @@ db.medicineIssue.belongsTo(db.healthFacility);
 // warehouse - medicine
 db.warehouse.belongsToMany(db.medicine, {
   through: "warehouseMedicines",
+  unique: false,
 });
 db.medicine.belongsToMany(db.warehouse, {
   through: "warehouseMedicines",
+  unique: false,
 });
 // unit - warehouseMedicine
 db.unit.hasMany(db.warehouseMedicine);

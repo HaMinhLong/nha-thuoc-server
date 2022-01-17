@@ -200,16 +200,17 @@ const create = async (req, res) => {
           Math.floor(Math.random() * (100000000000 - 1000000000 + 1)) +
           100000000000,
         exchange: Number(
-          item?.medicineUnits?.find(
-            (it) => it.unitId === item?.receiptMedicines?.unitId
-          )?.amount
+          item.medicineUnits.find(
+            (it) => it.unitId === item.receiptMedicines.unitId
+          ).amount
         ),
-        inStock: item.receiptMedicines.amount,
+        inStock: Number(item.receiptMedicines.amount),
         medicineId: item.id,
         unitId: item.receiptMedicines.unitId,
         warehouseId: warehouseId,
       };
     });
+    console.log("warehouseMedicineCreate", warehouseMedicineCreate);
     Receipt.create({
       id: receiptId,
       receiptCode,
@@ -225,7 +226,11 @@ const create = async (req, res) => {
     })
       .then((receipt) => {
         ReceiptMedicine.bulkCreate(receiptMedicineCreate);
-        WarehouseMedicine.bulkCreate(warehouseMedicineCreate);
+        WarehouseMedicine.bulkCreate(warehouseMedicineCreate)
+          .then((warehouseMedicine) => {})
+          .catch((err) => {
+            console.log("err", err);
+          });
         res.status(200).json({
           results: {
             list: receipt,

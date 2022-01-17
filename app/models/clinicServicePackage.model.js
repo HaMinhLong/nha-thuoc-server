@@ -12,11 +12,6 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       field: "clinicServicePackageName",
     },
-    time: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      field: "time",
-    },
     sampleResults: {
       type: DataTypes.TEXT,
       allowNull: true,

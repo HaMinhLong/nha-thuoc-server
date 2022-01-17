@@ -1,7 +1,9 @@
 const db = require("../models");
+const MedicalRegister = db.medicalRegister;
 const ClinicService = db.clinicService;
 const ClinicServicePackage = db.clinicServicePackage;
 const User = db.user;
+const Customer = db.customer;
 
 const moment = require("moment");
 
@@ -16,20 +18,21 @@ const getList = async (req, res) => {
     ? attributes.split(",")
     : [
         "id",
-        "clinicServiceName",
-        "clinicServicePackageId",
-        "price",
-        "description",
+        "clinicServiceId",
+        "date",
+        "customerId",
+        "contactChannel",
         "userId",
+        "description",
         "healthFacilityId",
-        "time",
         "status",
+        "clinicTimeId",
         "createdAt",
         "updatedAt",
       ];
   const status = filters.status || "";
-  const clinicServiceName = filters.clinicServiceName || "";
-  const clinicServicePackageId = filters.clinicServicePackageId || "";
+  const customerId = filters.customerId || "";
+  const clinicServiceId = filters.clinicServiceId || "";
   const userId = filters.userId || "";
   const healthFacilityId = filters.healthFacilityId || "";
   const fromDate = filters.fromDate || "2021-01-01T14:06:48.000Z";
@@ -42,13 +45,13 @@ const getList = async (req, res) => {
       [Op.and]: [
         { status: { [Op.like]: "%" + status + "%" } },
         {
-          clinicServiceName: {
-            [Op.like]: "%" + clinicServiceName + "%",
+          customerId: {
+            [Op.like]: "%" + customerId + "%",
           },
         },
         {
-          clinicServicePackageId: {
-            [Op.like]: "%" + clinicServicePackageId + "%",
+          clinicServiceId: {
+            [Op.like]: "%" + clinicServiceId + "%",
           },
         },
         { userId: { [Op.like]: "%" + userId + "%" } },
@@ -64,19 +67,24 @@ const getList = async (req, res) => {
     limit: size,
     include: [
       {
-        model: ClinicServicePackage,
+        model: ClinicService,
         required: true,
-        attributes: ["id", "clinicServicePackageName"],
+        attributes: ["id", "clinicServiceName"],
       },
       {
         model: User,
         required: true,
         attributes: ["id", "fullName"],
       },
+      {
+        model: Customer,
+        required: true,
+        attributes: ["id", "customerName", "mobile", "dateOfBirth"],
+      },
     ],
   };
 
-  ClinicService.findAndCountAll(options)
+  MedicalRegister.findAndCountAll(options)
     .then((result) => {
       res.status(200).json({
         results: {
@@ -103,15 +111,39 @@ const getList = async (req, res) => {
 
 const getOne = async (req, res) => {
   const { id } = req.params;
-  ClinicService.findOne({
+  MedicalRegister.findOne({
     where: {
       id: id,
     },
+    include: [
+      {
+        model: ClinicService,
+        required: true,
+        attributes: ["id", "clinicServiceName", "time"],
+        include: [
+          {
+            model: ClinicServicePackage,
+            required: true,
+            attributes: ["id", "clinicServicePackageName"],
+          },
+        ],
+      },
+      {
+        model: User,
+        required: true,
+        attributes: ["id", "fullName"],
+      },
+      {
+        model: Customer,
+        required: true,
+        attributes: ["id", "customerName", "mobile", "dateOfBirth"],
+      },
+    ],
   })
-    .then((clinicService) => {
+    .then((medicalRegister) => {
       res.status(200).json({
         results: {
-          list: clinicService,
+          list: medicalRegister,
           pagination: [],
         },
         success: true,
@@ -123,7 +155,7 @@ const getOne = async (req, res) => {
       res.status(200).json({
         success: true,
         error: err.message,
-        message: "Xảy ra lỗi khi lấy thông tin dịch vụ!",
+        message: "Xảy ra lỗi khi lấy thông tin lịch khám!",
       });
     });
 };
@@ -131,61 +163,102 @@ const getOne = async (req, res) => {
 const create = async (req, res) => {
   const {
     id,
-    clinicServiceName,
-    price,
-    time,
-    description,
-    clinicServicePackageId,
+    clinicServiceId,
+    date,
+    customerId,
+    customerName,
+    mobile,
+    contactChannel,
     userId,
+    description,
     healthFacilityId,
+    clinicTimeId,
     status,
+    exitsCustomer,
   } = req.body;
-  const clinicService = await ClinicService.findOne({
-    where: {
-      [Op.and]: [
-        { clinicServiceName: clinicServiceName },
-        { healthFacilityId: healthFacilityId },
-      ],
-    },
-  });
 
-  if (clinicService) {
-    res.status(200).json({
-      success: false,
-      error: "Dịch vụ đã tồn tại!",
-      message: "Dịch vụ đã tồn tại!",
+  const customerID =
+    Math.floor(Math.random() * (100000000000 - 1000000000 + 1)) + 100000000000;
+
+  if (!exitsCustomer) {
+    Customer.create({
+      id: customerID,
+      customerName,
+      mobile,
+      dateOfBirth: moment(),
+      gender: 1,
+      email: "",
+      address: "",
+      customerGroupId: 58458965475,
+      healthFacilityId,
+      status: 1,
+    }).then((customer) => {
+      MedicalRegister.create({
+        id:
+          id ||
+          Math.floor(Math.random() * (100000000000 - 1000000000 + 1)) +
+            100000000000,
+        clinicServiceId,
+        date,
+        clinicTimeId,
+        customerId: customerID,
+        contactChannel,
+        userId,
+        description,
+        healthFacilityId,
+        status,
+      })
+        .then((medicalRegister) => {
+          res.status(200).json({
+            results: {
+              list: medicalRegister,
+              pagination: [],
+            },
+            success: true,
+            error: "",
+            message: "Tạo mới lịch khám thành công!",
+          });
+        })
+        .catch((err) => {
+          res.status(200).json({
+            success: false,
+            error: err.message,
+            message: "Xảy ra lỗi khi tạo mới lịch khám!",
+          });
+        });
     });
   } else {
-    ClinicService.create({
+    MedicalRegister.create({
       id:
         id ||
         Math.floor(Math.random() * (100000000000 - 1000000000 + 1)) +
           100000000000,
-      clinicServiceName,
-      price,
-      time,
-      description,
-      clinicServicePackageId,
+      clinicServiceId,
+      date,
+      clinicTimeId,
+      customerId,
+      contactChannel,
       userId,
+      description,
       healthFacilityId,
       status,
     })
-      .then((clinicService) => {
+      .then((medicalRegister) => {
         res.status(200).json({
           results: {
-            list: clinicService,
+            list: medicalRegister,
             pagination: [],
           },
           success: true,
           error: "",
-          message: "Tạo mới dịch vụ thành công!",
+          message: "Tạo mới lịch khám thành công!",
         });
       })
       .catch((err) => {
         res.status(200).json({
           success: false,
           error: err.message,
-          message: "Xảy ra lỗi khi tạo mới dịch vụ!",
+          message: "Xảy ra lỗi khi tạo mới lịch khám!",
         });
       });
   }
@@ -193,72 +266,58 @@ const create = async (req, res) => {
 const updateRecord = async (req, res) => {
   const { id } = req.params;
   const {
-    clinicServiceName,
-    clinicServiceNameOld,
-    price,
-    time,
-    description,
-    clinicServicePackageId,
+    clinicServiceId,
+    date,
+    clinicTimeId,
+    customerId,
+    contactChannel,
     userId,
+    description,
     healthFacilityId,
     status,
   } = req.body;
-  const clinicService = await ClinicService.findOne({
-    where: {
-      [Op.and]: [
-        { clinicServiceName: clinicServiceName },
-        { healthFacilityId: healthFacilityId },
-      ],
+
+  MedicalRegister.update(
+    {
+      clinicServiceId: clinicServiceId,
+      date: date,
+      clinicTimeId: clinicTimeId,
+      customerId: customerId,
+      contactChannel: contactChannel,
+      userId: userId,
+      description: description,
+      healthFacilityId: healthFacilityId,
+      status: status,
     },
-  });
-  if (clinicService && clinicServiceNameOld !== clinicServiceName) {
-    res.status(200).json({
-      success: false,
-      error: "Dịch vụ đã tồn tại!",
-      message: "Dịch vụ đã tồn tại!",
-    });
-  } else {
-    ClinicService.update(
-      {
-        status: status,
-        clinicServiceName: clinicServiceName,
-        price: price,
-        time: time,
-        description: description,
-        clinicServicePackageId: clinicServicePackageId,
-        userId: userId,
-        healthFacilityId: healthFacilityId,
+    {
+      where: {
+        id: id,
       },
-      {
-        where: {
-          id: id,
+    }
+  )
+    .then((medicalRegister) => {
+      res.status(200).json({
+        results: {
+          list: medicalRegister,
+          pagination: [],
         },
-      }
-    )
-      .then((clinicService) => {
-        res.status(200).json({
-          results: {
-            list: clinicService,
-            pagination: [],
-          },
-          success: true,
-          error: "",
-          message: "Cập nhật dịch vụ thành công!",
-        });
-      })
-      .catch((err) => {
-        res.status(200).json({
-          success: false,
-          error: err.message,
-          message: "Xảy ra lỗi khi cập nhật dịch vụ!",
-        });
+        success: true,
+        error: "",
+        message: "Cập nhật lịch khám thành công!",
       });
-  }
+    })
+    .catch((err) => {
+      res.status(200).json({
+        success: false,
+        error: err.message,
+        message: "Xảy ra lỗi khi cập nhật lịch khám!",
+      });
+    });
 };
 const updateStatus = async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
-  ClinicService.update(
+  MedicalRegister.update(
     { status: status },
     {
       where: {
@@ -266,10 +325,10 @@ const updateStatus = async (req, res) => {
       },
     }
   )
-    .then((clinicService) => {
+    .then((medicalRegister) => {
       res.status(200).json({
         results: {
-          list: clinicService,
+          list: medicalRegister,
           pagination: [],
         },
         success: true,
@@ -288,27 +347,27 @@ const updateStatus = async (req, res) => {
 
 const deleteRecord = async (req, res) => {
   const { id } = req.params;
-  ClinicService.destroy({
+  MedicalRegister.destroy({
     where: {
       id: id,
     },
   })
-    .then((clinicService) => {
+    .then((medicalRegister) => {
       res.status(200).json({
         results: {
-          list: clinicService,
+          list: medicalRegister,
           pagination: [],
         },
         success: true,
         error: "",
-        message: "Xóa dịch vụ thành công!",
+        message: "Xóa lịch khám thành công!",
       });
     })
     .catch((err) => {
       res.status(200).json({
         success: false,
         message: err.message,
-        message: "Xảy ra lôi khi xóa dịch vụ!",
+        message: "Xảy ra lôi khi xóa lịch khám!",
       });
     });
 };
