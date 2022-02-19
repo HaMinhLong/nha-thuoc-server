@@ -184,6 +184,7 @@ const create = async (req, res) => {
     status,
     clinicReceiptServices,
     exitsCustomer,
+    exitsClinicRegister,
     customerName,
     mobile,
     address,
@@ -251,62 +252,108 @@ const create = async (req, res) => {
         status: 1,
       })
         .then((customer) => {
-          MedicalRegister.create({
-            id: medicalRegisterID,
-            clinicServiceId: clinicReceiptServiceCreate[0]?.clinicServiceId,
-            date: moment(),
-            clinicTimeId: null,
-            customerId: customerID,
-            contactChannel: 1,
-            userId: clinicReceiptServiceCreate[0]?.userId,
-            description: "",
-            healthFacilityId: healthFacilityId,
-            status: 1,
-          })
-            .then((medicineRegister) => {
-              ClinicReceipt.create({
-                id: id || clinicReceiptID,
-                clinicReceiptCode,
-                customerId: customerID,
-                paymentMethodId,
-                description,
-                debit,
-                total,
-                paid,
-                customerBrought,
-                giveBack,
-                payLater,
-                healthFacilityId,
-                medicalRegisterId: medicalRegisterID,
-                status,
-              })
-                .then((clinicReceipt) => {
-                  ClinicReceiptService.bulkCreate(clinicReceiptServiceCreate);
-                  res.status(200).json({
-                    results: {
-                      list: clinicReceipt,
-                      pagination: [],
-                    },
-                    success: true,
-                    error: "",
-                    message: "Tạo mới phiếu thu dịch vụ thành công!",
-                  });
-                })
-                .catch((err) => {
-                  res.status(200).json({
-                    success: false,
-                    error: err.message,
-                    message: "Xảy ra lỗi khi tạo mới phiếu thu dịch vụ!",
-                  });
-                });
+          if (exitsClinicRegister) {
+            MedicalRegister.update(
+              { status: 1 },
+              {
+                where: {
+                  id: medicalRegisterId,
+                },
+              }
+            );
+            ClinicReceipt.create({
+              id: id || clinicReceiptID,
+              clinicReceiptCode,
+              customerId: customerID,
+              paymentMethodId,
+              description,
+              debit,
+              total,
+              paid,
+              customerBrought,
+              giveBack,
+              payLater,
+              healthFacilityId,
+              medicalRegisterId: medicalRegisterId,
+              status,
             })
-            .catch((err) => {
-              res.status(200).json({
-                success: false,
-                error: err.message,
-                message: "Xảy ra lỗi khi tạo mới phiếu đăng ký khám!",
+              .then((clinicReceipt) => {
+                ClinicReceiptService.bulkCreate(clinicReceiptServiceCreate);
+                res.status(200).json({
+                  results: {
+                    list: clinicReceipt,
+                    pagination: [],
+                  },
+                  success: true,
+                  error: "",
+                  message: "Tạo mới phiếu thu dịch vụ thành công!",
+                });
+              })
+              .catch((err) => {
+                res.status(200).json({
+                  success: false,
+                  error: err.message,
+                  message: "Xảy ra lỗi khi tạo mới phiếu thu dịch vụ!",
+                });
               });
-            });
+          } else {
+            MedicalRegister.create({
+              id: medicalRegisterID,
+              clinicServiceId: clinicReceiptServiceCreate[0]?.clinicServiceId,
+              date: moment(),
+              clinicTimeId: null,
+              customerId: customerID,
+              contactChannel: 1,
+              userId: clinicReceiptServiceCreate[0]?.userId,
+              description: "",
+              healthFacilityId: healthFacilityId,
+              status: 1,
+            })
+              .then((medicineRegister) => {
+                ClinicReceipt.create({
+                  id: id || clinicReceiptID,
+                  clinicReceiptCode,
+                  customerId: customerID,
+                  paymentMethodId,
+                  description,
+                  debit,
+                  total,
+                  paid,
+                  customerBrought,
+                  giveBack,
+                  payLater,
+                  healthFacilityId,
+                  medicalRegisterId: medicalRegisterID,
+                  status,
+                })
+                  .then((clinicReceipt) => {
+                    ClinicReceiptService.bulkCreate(clinicReceiptServiceCreate);
+                    res.status(200).json({
+                      results: {
+                        list: clinicReceipt,
+                        pagination: [],
+                      },
+                      success: true,
+                      error: "",
+                      message: "Tạo mới phiếu thu dịch vụ thành công!",
+                    });
+                  })
+                  .catch((err) => {
+                    res.status(200).json({
+                      success: false,
+                      error: err.message,
+                      message: "Xảy ra lỗi khi tạo mới phiếu thu dịch vụ!",
+                    });
+                  });
+              })
+              .catch((err) => {
+                res.status(200).json({
+                  success: false,
+                  error: err.message,
+                  message: "Xảy ra lỗi khi tạo mới phiếu đăng ký khám!",
+                });
+              });
+          }
         })
         .catch((err) => {
           res.status(200).json({
@@ -316,62 +363,108 @@ const create = async (req, res) => {
           });
         });
     } else {
-      MedicalRegister.create({
-        id: medicalRegisterID,
-        clinicServiceId: clinicReceiptServiceCreate[0]?.clinicServiceId,
-        date: moment(),
-        clinicTimeId: null,
-        customerId: customerId,
-        contactChannel: 1,
-        userId: clinicReceiptServiceCreate[0]?.userId,
-        description: "",
-        healthFacilityId: healthFacilityId,
-        status: 1,
-      })
-        .then((medicineRegister) => {
-          ClinicReceipt.create({
-            id: id || clinicReceiptID,
-            clinicReceiptCode,
-            customerId,
-            paymentMethodId,
-            description,
-            debit,
-            total,
-            paid,
-            customerBrought,
-            giveBack,
-            payLater,
-            healthFacilityId,
-            medicalRegisterId: medicalRegisterID,
-            status,
-          })
-            .then((clinicReceipt) => {
-              ClinicReceiptService.bulkCreate(clinicReceiptServiceCreate);
-              res.status(200).json({
-                results: {
-                  list: clinicReceipt,
-                  pagination: [],
-                },
-                success: true,
-                error: "",
-                message: "Tạo mới phiếu thu dịch vụ thành công!",
-              });
-            })
-            .catch((err) => {
-              res.status(200).json({
-                success: false,
-                error: err.message,
-                message: "Xảy ra lỗi khi tạo mới phiếu thu dịch vụ!",
-              });
-            });
+      if (exitsClinicRegister) {
+        MedicalRegister.update(
+          { status: 1 },
+          {
+            where: {
+              id: medicalRegisterId,
+            },
+          }
+        );
+        ClinicReceipt.create({
+          id: id || clinicReceiptID,
+          clinicReceiptCode,
+          customerId,
+          paymentMethodId,
+          description,
+          debit,
+          total,
+          paid,
+          customerBrought,
+          giveBack,
+          payLater,
+          healthFacilityId,
+          medicalRegisterId: medicalRegisterId,
+          status,
         })
-        .catch((err) => {
-          res.status(200).json({
-            success: false,
-            error: err.message,
-            message: "Xảy ra lỗi khi tạo mới phiếu đăng ký khám!",
+          .then((clinicReceipt) => {
+            ClinicReceiptService.bulkCreate(clinicReceiptServiceCreate);
+            res.status(200).json({
+              results: {
+                list: clinicReceipt,
+                pagination: [],
+              },
+              success: true,
+              error: "",
+              message: "Tạo mới phiếu thu dịch vụ thành công!",
+            });
+          })
+          .catch((err) => {
+            res.status(200).json({
+              success: false,
+              error: err.message,
+              message: "Xảy ra lỗi khi tạo mới phiếu thu dịch vụ!",
+            });
           });
-        });
+      } else {
+        MedicalRegister.create({
+          id: medicalRegisterID,
+          clinicServiceId: clinicReceiptServiceCreate[0]?.clinicServiceId,
+          date: moment(),
+          clinicTimeId: null,
+          customerId: customerId,
+          contactChannel: 1,
+          userId: clinicReceiptServiceCreate[0]?.userId,
+          description: "",
+          healthFacilityId: healthFacilityId,
+          status: 1,
+        })
+          .then((medicineRegister) => {
+            ClinicReceipt.create({
+              id: id || clinicReceiptID,
+              clinicReceiptCode,
+              customerId,
+              paymentMethodId,
+              description,
+              debit,
+              total,
+              paid,
+              customerBrought,
+              giveBack,
+              payLater,
+              healthFacilityId,
+              medicalRegisterId: medicalRegisterID,
+              status,
+            })
+              .then((clinicReceipt) => {
+                ClinicReceiptService.bulkCreate(clinicReceiptServiceCreate);
+                res.status(200).json({
+                  results: {
+                    list: clinicReceipt,
+                    pagination: [],
+                  },
+                  success: true,
+                  error: "",
+                  message: "Tạo mới phiếu thu dịch vụ thành công!",
+                });
+              })
+              .catch((err) => {
+                res.status(200).json({
+                  success: false,
+                  error: err.message,
+                  message: "Xảy ra lỗi khi tạo mới phiếu thu dịch vụ!",
+                });
+              });
+          })
+          .catch((err) => {
+            res.status(200).json({
+              success: false,
+              error: err.message,
+              message: "Xảy ra lỗi khi tạo mới phiếu đăng ký khám!",
+            });
+          });
+      }
     }
   }
 };

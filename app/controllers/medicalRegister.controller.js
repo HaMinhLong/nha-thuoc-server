@@ -2,8 +2,10 @@ const db = require("../models");
 const MedicalRegister = db.medicalRegister;
 const ClinicService = db.clinicService;
 const ClinicServicePackage = db.clinicServicePackage;
+const ClinicType = db.clinicType;
 const User = db.user;
 const Customer = db.customer;
+const ClinicReceipt = db.clinicReceipt;
 
 const moment = require("moment");
 
@@ -71,12 +73,31 @@ const getList = async (req, res) => {
       {
         model: ClinicService,
         required: true,
-        attributes: ["id", "clinicServiceName"],
+        attributes: ["id", "clinicServiceName", "price"],
+        include: [
+          {
+            model: ClinicServicePackage,
+            required: true,
+            attributes: ["id", "clinicServicePackageName"],
+            include: [
+              {
+                model: ClinicType,
+                required: true,
+                attributes: ["id", "clinicTypeName"],
+              },
+            ],
+          },
+        ],
       },
       {
         model: User,
         required: true,
         attributes: ["id", "fullName"],
+      },
+      {
+        model: ClinicReceipt,
+        required: true,
+        attributes: ["id"],
       },
       {
         model: Customer,
@@ -98,6 +119,16 @@ const getList = async (req, res) => {
 
   MedicalRegister.findAndCountAll(options)
     .then((result) => {
+      const status0 = result.rows.filter((item) => item.status === 0).length;
+      const status1 = result.rows.filter((item) => item.status === 1).length;
+      const status2 = result.rows.filter((item) => item.status === 2).length;
+      const status3 = result.rows.filter((item) => item.status === 3).length;
+      const dataGroupByList = [
+        { status: 0, count: status0 },
+        { status: 1, count: status1 },
+        { status: 2, count: status2 },
+        { status: 3, count: status3 },
+      ];
       res.status(200).json({
         results: {
           list: result.rows,
@@ -105,6 +136,7 @@ const getList = async (req, res) => {
             total: result.count,
             pageSize: size,
             current: current,
+            dataGroupByList: dataGroupByList,
           },
         },
         success: true,
