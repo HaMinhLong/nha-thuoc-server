@@ -873,7 +873,7 @@ initialData = (db) => {
       id: 78451102302,
       menuName: "PK - Quản lý phiếu thu dịch vụ",
       orderBy: 1,
-      url: "/",
+      url: "/pk-receipt",
       icon: "",
       parentId: 54201589652,
       status: 1,

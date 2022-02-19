@@ -32,6 +32,8 @@ const getList = async (req, res) => {
       ];
   const status = filters.status || "";
   const customerId = filters.customerId || "";
+  const customerName = filters.customerName || "";
+  const mobile = filters.mobile || "";
   const clinicServiceId = filters.clinicServiceId || "";
   const userId = filters.userId || "";
   const healthFacilityId = filters.healthFacilityId || "";
@@ -80,6 +82,16 @@ const getList = async (req, res) => {
         model: Customer,
         required: true,
         attributes: ["id", "customerName", "mobile", "dateOfBirth"],
+        where: {
+          [Op.and]: [
+            {
+              mobile: { [Op.like]: "%" + mobile + "%" },
+            },
+            {
+              customerName: { [Op.like]: "%" + customerName + "%" },
+            },
+          ],
+        },
       },
     ],
   };

@@ -44,7 +44,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     clinicTimeId: {
       type: DataTypes.BIGINT,
-      allowNull: false,
+      allowNull: true,
       field: "clinicTimeId",
     },
     status: {

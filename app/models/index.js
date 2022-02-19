@@ -118,6 +118,35 @@ db.medicineTransferMedicine = require("./medicineTransferMedicine.model")(
 );
 db.clinicTime = require("./clinicTime.model")(sequelize, Sequelize);
 db.medicalRegister = require("./medicalRegister.model")(sequelize, Sequelize);
+db.clinicReceipt = require("./clinicReceipt.model")(sequelize, Sequelize);
+db.clinicReceiptService = require("./clinicReceiptService.model")(
+  sequelize,
+  Sequelize
+);
+
+// clinicReceipt - clinicService
+db.clinicReceipt.belongsToMany(db.clinicService, {
+  through: "clinicReceiptServices",
+});
+db.clinicService.belongsToMany(db.clinicReceipt, {
+  through: "clinicReceiptServices",
+});
+// user - clinicReceiptService
+db.user.hasMany(db.clinicReceiptService);
+db.clinicReceiptService.belongsTo(db.user);
+
+// customer - clinicReceipt
+db.customer.hasMany(db.clinicReceipt);
+db.clinicReceipt.belongsTo(db.customer);
+// paymentMethod - clinicReceipt
+db.paymentMethod.hasMany(db.clinicReceipt);
+db.clinicReceipt.belongsTo(db.paymentMethod);
+// healthFacility - clinicReceipt
+db.healthFacility.hasMany(db.clinicReceipt);
+db.clinicReceipt.belongsTo(db.healthFacility);
+// medicalRegister - clinicReceipt
+db.medicalRegister.hasMany(db.clinicReceipt);
+db.clinicReceipt.belongsTo(db.medicalRegister);
 
 // clinicTime - medicalRegister
 db.clinicTime.hasMany(db.medicalRegister);
