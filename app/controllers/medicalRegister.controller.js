@@ -6,6 +6,7 @@ const ClinicType = db.clinicType;
 const User = db.user;
 const Customer = db.customer;
 const ClinicReceipt = db.clinicReceipt;
+const ClinicResult = db.clinicResult;
 
 const moment = require("moment");
 
@@ -96,7 +97,10 @@ const getList = async (req, res) => {
       },
       {
         model: ClinicReceipt,
-        required: true,
+        attributes: ["id"],
+      },
+      {
+        model: ClinicResult,
         attributes: ["id"],
       },
       {

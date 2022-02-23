@@ -891,7 +891,7 @@ initialData = (db) => {
       id: 30012024562,
       menuName: "PK - Quản lý kết quả khám",
       orderBy: 3,
-      url: "/pk-medical-result",
+      url: "/pk-clinic-result",
       icon: "",
       parentId: 54201589652,
       status: 1,

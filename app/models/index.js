@@ -123,6 +123,11 @@ db.clinicReceiptService = require("./clinicReceiptService.model")(
   sequelize,
   Sequelize
 );
+db.clinicResult = require("./clinicResult.model")(sequelize, Sequelize);
+
+// medicalRegister - clinicResult
+db.medicalRegister.hasMany(db.clinicResult);
+db.clinicResult.belongsTo(db.medicalRegister);
 
 // clinicReceipt - clinicService
 db.clinicReceipt.belongsToMany(db.clinicService, {
