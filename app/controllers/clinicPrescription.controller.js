@@ -4,6 +4,7 @@ const MedicalRegister = db.medicalRegister;
 const User = db.user;
 const Customer = db.customer;
 const ClinicPreMedicine = db.clinicPreMedicine;
+const ClinicService = db.clinicService;
 const Medicine = db.medicine;
 const Unit = db.unit;
 
@@ -59,6 +60,11 @@ const getList = async (req, res) => {
             model: User,
             required: true,
             attributes: ["id", "fullName"],
+          },
+          {
+            model: ClinicService,
+            required: true,
+            attributes: ["id", "clinicServiceName"],
           },
           {
             model: Customer,
@@ -189,7 +195,14 @@ const create = async (req, res) => {
       });
 
       ClinicPreMedicine.bulkCreate(clinicPreMedicineCreate);
-
+      MedicalRegister.update(
+        { status: 3 },
+        {
+          where: {
+            id: medicalRegisterId,
+          },
+        }
+      );
       res.status(200).json({
         results: {
           list: clinicPrescription,
@@ -257,7 +270,7 @@ const updateRecord = async (req, res) => {
       ClinicPreMedicine.bulkCreate(clinicPreMedicineCreate);
 
       for (let index = 0; index < clinicPreMedicineUpdate.length; index++) {
-        ClinicReceiptService.update(
+        ClinicPreMedicine.update(
           {
             amount: clinicPreMedicineUpdate[index].amount,
             unitId: clinicPreMedicineUpdate[index].unitId,
@@ -271,6 +284,14 @@ const updateRecord = async (req, res) => {
           }
         );
       }
+      MedicalRegister.update(
+        { status: 3 },
+        {
+          where: {
+            id: medicalRegisterId,
+          },
+        }
+      );
       res.status(200).json({
         results: {
           list: clinicPrescription,

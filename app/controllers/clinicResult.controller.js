@@ -143,6 +143,14 @@ const create = async (req, res) => {
     medicalRegisterId,
   })
     .then((clinicResult) => {
+      MedicalRegister.update(
+        { status: 3 },
+        {
+          where: {
+            id: medicalRegisterId,
+          },
+        }
+      );
       res.status(200).json({
         results: {
           list: clinicResult,
@@ -178,6 +186,14 @@ const updateRecord = async (req, res) => {
     }
   )
     .then((clinicResult) => {
+      MedicalRegister.update(
+        { status: 3 },
+        {
+          where: {
+            id: medicalRegisterId,
+          },
+        }
+      );
       res.status(200).json({
         results: {
           list: clinicResult,
