@@ -1,9 +1,12 @@
 const db = require("../models");
-const ClinicResult = db.clinicResult;
+const ClinicPrescription = db.clinicPrescription;
 const MedicalRegister = db.medicalRegister;
 const User = db.user;
 const Customer = db.customer;
-const ClinicService = db.clinicService;
+const ClinicPreMedicine = db.clinicPreMedicine;
+const Medicine = db.medicine;
+const Unit = db.unit;
+
 const moment = require("moment");
 
 const Op = db.Sequelize.Op;
@@ -15,7 +18,16 @@ const getList = async (req, res) => {
   const order = sort ? JSON.parse(sort) : ["createdAt", "DESC"];
   const attributesQuery = attributes
     ? attributes.split(",")
-    : ["id", "description", "medicalRegisterId", "createdAt", "updatedAt"];
+    : [
+        "id",
+        "description",
+        "sick",
+        "customerId",
+        "userId",
+        "medicalRegisterId",
+        "createdAt",
+        "updatedAt",
+      ];
   const customerName = filters.customerName || "";
   const healthFacilityId = filters.healthFacilityId || "";
   const mobile = filters.mobile || "";
@@ -44,11 +56,6 @@ const getList = async (req, res) => {
         },
         include: [
           {
-            model: ClinicService,
-            required: true,
-            attributes: ["id", "clinicServiceName", "price"],
-          },
-          {
             model: User,
             required: true,
             attributes: ["id", "fullName"],
@@ -56,13 +63,7 @@ const getList = async (req, res) => {
           {
             model: Customer,
             required: true,
-            attributes: [
-              "id",
-              "customerName",
-              "mobile",
-              "dateOfBirth",
-              "address",
-            ],
+            attributes: ["id", "customerName", "mobile", "dateOfBirth"],
             where: {
               [Op.and]: [
                 {
@@ -79,7 +80,7 @@ const getList = async (req, res) => {
     ],
   };
 
-  ClinicResult.findAndCountAll(options)
+  ClinicPrescription.findAndCountAll(options)
     .then((result) => {
       res.status(200).json({
         results: {
@@ -106,15 +107,33 @@ const getList = async (req, res) => {
 
 const getOne = async (req, res) => {
   const { id } = req.params;
-  ClinicResult.findOne({
+  ClinicPrescription.findOne({
     where: {
       id: id,
     },
+    include: [
+      {
+        model: Medicine,
+        required: true,
+        attributes: ["id", "medicineName"],
+        through: {
+          where: {
+            clinicPrescriptionId: { [Op.like]: "%" + id + "%" },
+          },
+        },
+        include: [
+          {
+            model: Unit,
+            attributes: ["id", "unitName"],
+          },
+        ],
+      },
+    ],
   })
-    .then((clinicResult) => {
+    .then((clinicPrescription) => {
       res.status(200).json({
         results: {
-          list: clinicResult,
+          list: clinicPrescription,
           pagination: [],
         },
         success: true,
@@ -126,49 +145,87 @@ const getOne = async (req, res) => {
       res.status(200).json({
         success: true,
         error: err.message,
-        message: "Xảy ra lỗi khi lấy thông tin kết quả khám!",
+        message: "Xảy ra lỗi khi lấy thông tin kê đơn thuốc!",
       });
     });
 };
 
 const create = async (req, res) => {
-  const { id, description, medicalRegisterId } = req.body;
-
-  ClinicResult.create({
-    id:
-      id ||
-      Math.floor(Math.random() * (100000000000 - 1000000000 + 1)) +
-        100000000000,
+  const {
+    id,
     description,
+    sick,
+    customerId,
+    userId,
+    clinicPreMedicines,
+    medicalRegisterId,
+  } = req.body;
+
+  const clinicPrescriptionID =
+    Math.floor(Math.random() * (100000000000 - 1000000000 + 1)) + 100000000000;
+
+  ClinicPrescription.create({
+    id: id || clinicPrescriptionID,
+    description,
+    sick,
+    customerId,
+    userId,
     medicalRegisterId,
   })
-    .then((clinicResult) => {
+    .then((clinicPrescription) => {
+      const clinicPreMedicineAdd = clinicPreMedicines?.filter(
+        (item) => item.flag < 0
+      );
+      const clinicPreMedicineCreate = clinicPreMedicineAdd?.map((item) => {
+        return {
+          id:
+            Math.floor(Math.random() * (100000000000 - 1000000000 + 1)) +
+            100000000000,
+          amount: item.amount,
+          unitId: item.unitId,
+          clinicPrescriptionId: clinicPrescriptionID,
+          medicineId: item.medicineId,
+        };
+      });
+
+      ClinicPreMedicine.bulkCreate(clinicPreMedicineCreate);
+
       res.status(200).json({
         results: {
-          list: clinicResult,
+          list: clinicPrescription,
           pagination: [],
         },
         success: true,
         error: "",
-        message: "Tạo mới kết quả khám thành công!",
+        message: "Tạo mới kê đơn thuốc thành công!",
       });
     })
     .catch((err) => {
       res.status(200).json({
         success: false,
         error: err.message,
-        message: "Xảy ra lỗi khi tạo mới kết quả khám!",
+        message: "Xảy ra lỗi khi tạo mới kê đơn thuốc!",
       });
     });
 };
 
 const updateRecord = async (req, res) => {
   const { id } = req.params;
-  const { medicalRegisterId, description } = req.body;
+  const {
+    medicalRegisterId,
+    description,
+    sick,
+    customerId,
+    userId,
+    clinicPreMedicines,
+  } = req.body;
 
-  ClinicResult.update(
+  ClinicPrescription.update(
     {
       description: description,
+      sick: sick,
+      customerId: customerId,
+      userId: userId,
       medicalRegisterId: medicalRegisterId,
     },
     {
@@ -177,49 +234,85 @@ const updateRecord = async (req, res) => {
       },
     }
   )
-    .then((clinicResult) => {
+    .then((clinicPrescription) => {
+      const clinicPreMedicineUpdate = clinicPreMedicines?.filter(
+        (item) => item.flag > 0
+      );
+      const clinicPreMedicineAdd = clinicPreMedicines?.filter(
+        (item) => item.flag < 0
+      );
+
+      const clinicPreMedicineCreate = clinicPreMedicineAdd?.map((item) => {
+        return {
+          id:
+            Math.floor(Math.random() * (100000000000 - 1000000000 + 1)) +
+            100000000000,
+          amount: item.amount,
+          unitId: item.unitId,
+          clinicPrescriptionId: id,
+          medicineId: item.medicineId,
+        };
+      });
+
+      ClinicPreMedicine.bulkCreate(clinicPreMedicineCreate);
+
+      for (let index = 0; index < clinicPreMedicineUpdate.length; index++) {
+        ClinicReceiptService.update(
+          {
+            amount: clinicPreMedicineUpdate[index].amount,
+            unitId: clinicPreMedicineUpdate[index].unitId,
+            clinicPrescriptionId: id,
+            medicineId: clinicPreMedicineUpdate[index].medicineId,
+          },
+          {
+            where: {
+              id: clinicPreMedicineUpdate[index].id,
+            },
+          }
+        );
+      }
       res.status(200).json({
         results: {
-          list: clinicResult,
+          list: clinicPrescription,
           pagination: [],
         },
         success: true,
         error: "",
-        message: "Cập nhật kết quả khám thành công!",
+        message: "Cập nhật kê đơn thuốc thành công!",
       });
     })
     .catch((err) => {
       res.status(200).json({
         success: false,
         error: err.message,
-        message: "Xảy ra lỗi khi cập nhật kết quả khám!",
+        message: "Xảy ra lỗi khi cập nhật kê đơn thuốc!",
       });
     });
 };
 
 const deleteRecord = async (req, res) => {
   const { id } = req.params;
-  ClinicResult.destroy({
+  ClinicPrescription.destroy({
     where: {
       id: id,
     },
   })
-    .then((clinicResult) => {
+    .then((clinicPrescription) => {
       res.status(200).json({
         results: {
-          list: clinicResult,
+          list: clinicPrescription,
           pagination: [],
         },
         success: true,
         error: "",
-        message: "Xóa kết quả khám thành công!",
+        message: "Xóa kê đơn thuốc thành công!",
       });
     })
     .catch((err) => {
       res.status(200).json({
         success: false,
         message: err.message,
-        message: "Xảy ra lôi khi xóa kết quả khám!",
+        message: "Xảy ra lôi khi xóa kê đơn thuốc!",
       });
     });
 };

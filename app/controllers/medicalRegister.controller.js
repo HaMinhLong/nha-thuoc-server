@@ -7,6 +7,7 @@ const User = db.user;
 const Customer = db.customer;
 const ClinicReceipt = db.clinicReceipt;
 const ClinicResult = db.clinicResult;
+const ClinicPrescription = db.clinicPrescription;
 
 const moment = require("moment");
 
@@ -104,9 +105,13 @@ const getList = async (req, res) => {
         attributes: ["id"],
       },
       {
+        model: ClinicPrescription,
+        attributes: ["id"],
+      },
+      {
         model: Customer,
         required: true,
-        attributes: ["id", "customerName", "mobile", "dateOfBirth"],
+        attributes: ["id", "customerName", "mobile", "dateOfBirth", "address"],
         where: {
           [Op.and]: [
             {

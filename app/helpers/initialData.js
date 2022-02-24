@@ -900,7 +900,7 @@ initialData = (db) => {
       id: 98445520214,
       menuName: "PK - Quản lý kê đơn thuốc",
       orderBy: 4,
-      url: "/",
+      url: "/pk-clinic-prescription",
       icon: "",
       parentId: 54201589652,
       status: 1,

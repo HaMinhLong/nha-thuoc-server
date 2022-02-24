@@ -115,7 +115,7 @@ const getOne = async (req, res) => {
       res.status(200).json({
         success: true,
         error: err.message,
-        message: "Xảy ra lỗi khi lấy thông tin thông tin thuốc tại phiếu!",
+        message: "Xảy ra lỗi khi lấy thông tin thuốc tại phiếu!",
       });
     });
 };

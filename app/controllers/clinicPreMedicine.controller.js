@@ -1,7 +1,7 @@
 const db = require("../models");
-const MedicineIssueMedicine = db.medicineIssueMedicine;
+const ClinicPreMedicine = db.clinicPreMedicine;
 const Medicine = db.medicine;
-const MedicineIssue = db.medicineIssue;
+const ClinicPrescription = db.clinicPrescription;
 
 const moment = require("moment");
 
@@ -16,22 +16,14 @@ const getList = async (req, res) => {
     ? attributes.split(",")
     : [
         "id",
-        "price",
         "amount",
-        "retail",
-        "description",
-        "discount",
-        "discountType",
-        "tax",
-        "taxType",
-        "total",
         "unitId",
-        "medicineIssueId",
+        "clinicPrescriptionId",
         "medicineId",
         "createdAt",
         "updatedAt",
       ];
-  const medicineIssueId = filters.medicineIssueId || "";
+  const clinicPrescriptionId = filters.clinicPrescriptionId || "";
   const fromDate = filters.fromDate || "2021-01-01T14:06:48.000Z";
   const toDate = filters.toDate || moment();
   const size = ranges[1] - ranges[0];
@@ -41,8 +33,8 @@ const getList = async (req, res) => {
     where: {
       [Op.and]: [
         {
-          medicineIssueId: {
-            [Op.like]: "%" + medicineIssueId + "%",
+          clinicPrescriptionId: {
+            [Op.like]: "%" + clinicPrescriptionId + "%",
           },
         },
       ],
@@ -56,7 +48,7 @@ const getList = async (req, res) => {
     limit: size,
   };
 
-  MedicineIssueMedicine.findAndCountAll(options)
+  ClinicPreMedicine.findAndCountAll(options)
     .then((result) => {
       res.status(200).json({
         results: {
@@ -84,7 +76,7 @@ const getList = async (req, res) => {
 const getOne = async (req, res) => {
   const { id } = req.params;
 
-  MedicineIssue.findOne({
+  ClinicPrescription.findOne({
     attributes: ["id"],
     include: [
       {
@@ -98,10 +90,10 @@ const getOne = async (req, res) => {
       },
     ],
   })
-    .then((medicineIssueMedicine) => {
+    .then((clinicPreMedicine) => {
       res.status(200).json({
         results: {
-          list: medicineIssueMedicine,
+          list: clinicPreMedicine,
           pagination: [],
         },
         success: true,
@@ -119,44 +111,22 @@ const getOne = async (req, res) => {
 };
 
 const create = async (req, res) => {
-  const {
-    id,
-    price,
-    amount,
-    retail,
-    description,
-    discount,
-    discountType,
-    tax,
-    taxType,
-    total,
-    unitId,
-    medicineIssueId,
-    medicineId,
-  } = req.body;
+  const { id, amount, unitId, clinicPrescriptionId, medicineId } = req.body;
 
-  MedicineIssueMedicine.create({
+  ClinicPreMedicine.create({
     id:
       id ||
       Math.floor(Math.random() * (100000000000 - 1000000000 + 1)) +
         100000000000,
-    price,
     amount,
-    retail,
-    description,
-    discount,
-    discountType,
-    tax,
-    taxType,
-    total,
     unitId,
-    medicineIssueId,
+    clinicPrescriptionId,
     medicineId,
   })
-    .then((medicineIssueMedicine) => {
+    .then((clinicPreMedicine) => {
       res.status(200).json({
         results: {
-          list: medicineIssueMedicine,
+          list: clinicPreMedicine,
           pagination: [],
         },
         success: true,
@@ -174,34 +144,13 @@ const create = async (req, res) => {
 };
 const updateRecord = async (req, res) => {
   const { id } = req.params;
-  const {
-    price,
-    amount,
-    retail,
-    description,
-    discount,
-    discountType,
-    tax,
-    taxType,
-    total,
-    unitId,
-    medicineIssueId,
-    medicineId,
-  } = req.body;
+  const { amount, unitId, clinicPrescriptionId, medicineId } = req.body;
 
-  MedicineIssueMedicine.update(
+  ClinicPreMedicine.update(
     {
-      price: price,
       amount: amount,
-      retail: retail,
-      description: description,
-      discount: discount,
-      discountType: discountType,
-      tax: tax,
-      taxType: taxType,
-      total: total,
       unitId: unitId,
-      medicineIssueId: medicineIssueId,
+      clinicPrescriptionId: clinicPrescriptionId,
       medicineId: medicineId,
     },
     {
@@ -210,10 +159,10 @@ const updateRecord = async (req, res) => {
       },
     }
   )
-    .then((medicineIssueMedicine) => {
+    .then((clinicPreMedicine) => {
       res.status(200).json({
         results: {
-          list: medicineIssueMedicine,
+          list: clinicPreMedicine,
           pagination: [],
         },
         success: true,
@@ -232,15 +181,15 @@ const updateRecord = async (req, res) => {
 
 const deleteRecord = async (req, res) => {
   const { id } = req.params;
-  MedicineIssueMedicine.destroy({
+  ClinicPreMedicine.destroy({
     where: {
       id: id,
     },
   })
-    .then((medicineIssueMedicine) => {
+    .then((clinicPreMedicine) => {
       res.status(200).json({
         results: {
-          list: medicineIssueMedicine,
+          list: clinicPreMedicine,
           pagination: [],
         },
         success: true,

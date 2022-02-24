@@ -124,6 +124,35 @@ db.clinicReceiptService = require("./clinicReceiptService.model")(
   Sequelize
 );
 db.clinicResult = require("./clinicResult.model")(sequelize, Sequelize);
+db.clinicPrescription = require("./clinicPrescription.model")(
+  sequelize,
+  Sequelize
+);
+db.clinicPreMedicine = require("./clinicPreMedicine.model")(
+  sequelize,
+  Sequelize
+);
+
+// clinicPrescription - medicine
+db.clinicPrescription.belongsToMany(db.medicine, {
+  through: "clinicPreMedicines",
+});
+db.medicine.belongsToMany(db.clinicPrescription, {
+  through: "clinicPreMedicines",
+});
+// unit - clinicPreMedicine
+db.unit.hasMany(db.clinicPreMedicine);
+db.clinicPreMedicine.belongsTo(db.unit);
+
+// customer - clinicPrescription
+db.customer.hasMany(db.clinicPrescription);
+db.clinicPrescription.belongsTo(db.customer);
+// user - clinicPrescription
+db.user.hasMany(db.clinicPrescription);
+db.clinicPrescription.belongsTo(db.user);
+// medicalRegister - clinicPrescription
+db.medicalRegister.hasMany(db.clinicPrescription);
+db.clinicPrescription.belongsTo(db.medicalRegister);
 
 // medicalRegister - clinicResult
 db.medicalRegister.hasMany(db.clinicResult);
