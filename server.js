@@ -108,6 +108,7 @@ require("./app/routes/clinicReceiptService.routes")(app);
 require("./app/routes/clinicResult.routes")(app);
 require("./app/routes/clinicPrescription.routes")(app);
 require("./app/routes/clinicPreMedicine.routes")(app);
+require("./app/routes/clinicReport.routes")(app);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;
