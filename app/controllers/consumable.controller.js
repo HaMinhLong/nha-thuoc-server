@@ -177,7 +177,8 @@ const create = async (req, res) => {
       total: item.consumableMedicines.total || 0,
       unitId: item.consumableMedicines.unitId,
       exchange: item.consumableMedicines.exchange,
-      medicineId: item.id,
+      medicineId: item.medicineId,
+      receiptMedicineId: item.receiptMedicine.id,
       consumableId: consumableId,
     };
   });
@@ -200,14 +201,19 @@ const create = async (req, res) => {
       .then((consumable) => {
         ConsumableMedicine.bulkCreate(consumableMedicineCreate);
         for (let index = 0; index < consumableMedicineCreate.length; index++) {
+          const element = consumableMedicineCreate[index];
+
           WarehouseMedicine.findOne({
             where: {
               [Op.and]: [
                 {
-                  medicineId: consumableMedicineCreate[index].medicineId,
+                  medicineId: element.medicineId,
                 },
                 {
                   warehouseId: warehouseId,
+                },
+                {
+                  receiptMedicineId: element.receiptMedicineId,
                 },
               ],
             },
@@ -216,18 +222,19 @@ const create = async (req, res) => {
               {
                 inStock:
                   warehouse.inStock -
-                  consumableMedicineCreate[index].amount *
-                    (warehouse.exchange /
-                      consumableMedicineCreate[index].exchange),
+                  element.amount * (warehouse.exchange / element.exchange),
               },
               {
                 where: {
                   [Op.and]: [
                     {
-                      medicineId: consumableMedicineCreate[index].medicineId,
+                      medicineId: element.medicineId,
                     },
                     {
                       warehouseId: warehouseId,
+                    },
+                    {
+                      receiptMedicineId: element.receiptMedicineId,
                     },
                   ],
                 },

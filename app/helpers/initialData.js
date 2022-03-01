@@ -469,6 +469,7 @@ initialData = (db) => {
     medicineId: 28448165375,
     warehouseId: 12345678911,
     unitId: 28448165375,
+    receiptMedicineId: 985002455699,
   });
   db.medicineIssue.create({
     id: 146167196929,

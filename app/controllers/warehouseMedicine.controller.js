@@ -1,9 +1,9 @@
 const db = require("../models");
 const WarehouseMedicine = db.warehouseMedicine;
 const Medicine = db.medicine;
-const Warehouse = db.warehouse;
 const Producer = db.producer;
 const MedicineType = db.medicineType;
+const ReceiptMedicine = db.receiptMedicine;
 
 const moment = require("moment");
 
@@ -18,22 +18,14 @@ const getList = async (req, res) => {
     ? attributes.split(",")
     : [
         "id",
-        "medicineName",
-        "registrationNumber",
-        "standard",
-        "activeIngredientName",
-        "concentration",
-        "country",
-        "medicineTypeId",
-        "apothecaryId",
-        "packageId",
-        "producerId",
-        "healthFacilityId",
-        "status",
+        "exchange",
+        "inStock",
+        "medicineId",
+        "unitId",
+        "warehouseId",
         "createdAt",
         "updatedAt",
       ];
-  const status = filters.status || "";
   const warehouseId = filters.warehouseId || "";
   const healthFacilityId = filters.healthFacilityId || "";
   const fromDate = filters.fromDate || "2021-01-01T14:06:48.000Z";
@@ -44,12 +36,18 @@ const getList = async (req, res) => {
   var options = {
     where: {
       [Op.and]: [
-        { status: { [Op.like]: "%" + 1 + "%" } },
-        { healthFacilityId: { [Op.like]: "%" + healthFacilityId + "%" } },
+        {
+          warehouseId: { [Op.like]: "%" + warehouseId + "%" },
+        },
+        {
+          inStock: { [Op.gt]: 0 },
+        },
+        {
+          createdAt: {
+            [Op.between]: [fromDate, toDate],
+          },
+        },
       ],
-      createdAt: {
-        [Op.between]: [fromDate, toDate],
-      },
     },
     order: [order],
     attributes: attributesQuery,
@@ -57,29 +55,36 @@ const getList = async (req, res) => {
     limit: size,
     include: [
       {
-        model: Warehouse,
+        model: ReceiptMedicine,
         required: true,
-        through: {
-          where: {
-            warehouseId: { [Op.like]: "%" + warehouseId + "%" },
-            inStock: { [Op.gt]: 0 },
-          },
+        attributes: ["id", "expiry", "receiptId"],
+      },
+      {
+        model: Medicine,
+        required: true,
+        where: {
+          [Op.and]: [
+            { status: { [Op.like]: "%" + 1 + "%" } },
+            { healthFacilityId: { [Op.like]: "%" + healthFacilityId + "%" } },
+          ],
         },
-      },
-      {
-        model: Producer,
-        required: true,
-        attributes: ["id", "producerName"],
-      },
-      {
-        model: MedicineType,
-        required: true,
-        attributes: ["id", "medicineTypeName"],
+        include: [
+          {
+            model: Producer,
+            required: true,
+            attributes: ["id", "producerName"],
+          },
+          {
+            model: MedicineType,
+            required: true,
+            attributes: ["id", "medicineTypeName"],
+          },
+        ],
       },
     ],
   };
 
-  Medicine.findAndCountAll(options)
+  WarehouseMedicine.findAndCountAll(options)
     .then((result) => {
       res.status(200).json({
         results: {

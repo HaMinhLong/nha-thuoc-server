@@ -205,7 +205,8 @@ const create = async (req, res) => {
       total: item.medicineIssueMedicines.total || 0,
       unitId: item.medicineIssueMedicines.unitId,
       exchange: item.medicineIssueMedicines.exchange,
-      medicineId: item.id,
+      medicineId: item.medicineId,
+      receiptMedicineId: item.receiptMedicine.id,
       medicineIssueId: medicineIssueId,
     };
   });
@@ -257,6 +258,10 @@ const create = async (req, res) => {
                     {
                       warehouseId: warehouseId,
                     },
+                    {
+                      receiptMedicineId:
+                        medicineIssueMedicineCreate[index].receiptMedicineId,
+                    },
                   ],
                 },
               }).then((warehouse) => {
@@ -277,6 +282,11 @@ const create = async (req, res) => {
                         },
                         {
                           warehouseId: warehouseId,
+                        },
+                        {
+                          receiptMedicineId:
+                            medicineIssueMedicineCreate[index]
+                              .receiptMedicineId,
                         },
                       ],
                     },
@@ -339,6 +349,10 @@ const create = async (req, res) => {
                   {
                     warehouseId: warehouseId,
                   },
+                  {
+                    receiptMedicineId:
+                      medicineIssueMedicineCreate[index].receiptMedicineId,
+                  },
                 ],
               },
             }).then((warehouse) => {
@@ -359,6 +373,10 @@ const create = async (req, res) => {
                       },
                       {
                         warehouseId: warehouseId,
+                      },
+                      {
+                        receiptMedicineId:
+                          medicineIssueMedicineCreate[index].receiptMedicineId,
                       },
                     ],
                   },

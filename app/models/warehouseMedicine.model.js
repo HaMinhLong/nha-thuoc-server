@@ -32,6 +32,11 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       field: "warehouseId",
     },
+    receiptMedicineId: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
+      field: "receiptMedicineId",
+    },
   });
 
   return WarehouseMedicine;

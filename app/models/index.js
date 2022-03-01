@@ -266,15 +266,16 @@ db.medicineIssue.belongsTo(db.customer);
 db.healthFacility.hasMany(db.medicineIssue);
 db.medicineIssue.belongsTo(db.healthFacility);
 
-// warehouse - medicine
-db.warehouse.belongsToMany(db.medicine, {
-  through: "warehouseMedicines",
-  unique: false,
-});
-db.medicine.belongsToMany(db.warehouse, {
-  through: "warehouseMedicines",
-  unique: false,
-});
+// warehouse - warehouseMedicine
+db.warehouse.hasMany(db.warehouseMedicine);
+db.warehouseMedicine.belongsTo(db.warehouse);
+// medicine - warehouseMedicine
+db.medicine.hasMany(db.warehouseMedicine);
+db.warehouseMedicine.belongsTo(db.medicine);
+// receiptMedicine - warehouseMedicine
+db.receiptMedicine.hasMany(db.warehouseMedicine);
+db.warehouseMedicine.belongsTo(db.receiptMedicine);
+
 // unit - warehouseMedicine
 db.unit.hasMany(db.warehouseMedicine);
 db.warehouseMedicine.belongsTo(db.unit);

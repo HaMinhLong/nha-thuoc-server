@@ -172,6 +172,7 @@ const create = async (req, res) => {
       });
     });
 };
+
 const updateRecord = async (req, res) => {
   const { id } = req.params;
   const {

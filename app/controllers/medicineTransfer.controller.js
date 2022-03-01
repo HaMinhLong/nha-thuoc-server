@@ -182,7 +182,8 @@ const create = async (req, res) => {
         total: item.medicineTransferMedicines.total || 0,
         unitId: item.medicineTransferMedicines.unitId,
         exchange: item.medicineTransferMedicines.exchange,
-        medicineId: item.id,
+        medicineId: item.medicineId,
+        receiptMedicineId: item.receiptMedicine.id,
         medicineTransferId: medicineTransferId,
       };
     }
@@ -211,14 +212,18 @@ const create = async (req, res) => {
           index < medicineTransferMedicineCreate.length;
           index++
         ) {
+          const element = medicineTransferMedicineCreate[index];
           WarehouseMedicine.findOne({
             where: {
               [Op.and]: [
                 {
-                  medicineId: medicineTransferMedicineCreate[index].medicineId,
+                  medicineId: element.medicineId,
                 },
                 {
                   warehouseId: warehouseId,
+                },
+                {
+                  receiptMedicineId: element.receiptMedicineId,
                 },
               ],
             },
@@ -227,11 +232,13 @@ const create = async (req, res) => {
               where: {
                 [Op.and]: [
                   {
-                    medicineId:
-                      medicineTransferMedicineCreate[index].medicineId,
+                    medicineId: element.medicineId,
                   },
                   {
                     warehouseId: warehouseTransferId,
+                  },
+                  {
+                    receiptMedicineId: element.receiptMedicineId,
                   },
                 ],
               },
@@ -242,29 +249,30 @@ const create = async (req, res) => {
                     Math.floor(
                       Math.random() * (100000000000 - 1000000000 + 1)
                     ) + 100000000000,
-                  exchange: medicineTransferMedicineCreate[index].exchange,
-                  inStock: medicineTransferMedicineCreate[index].amount,
-                  medicineId: medicineTransferMedicineCreate[index].medicineId,
+                  exchange: element.exchange,
+                  inStock: element.amount,
+                  unitId: element.unitId,
+                  medicineId: element.medicineId,
+                  receiptMedicineId: element.receiptMedicineId,
                   warehouseId: warehouseTransferId,
-                  unitId: medicineTransferMedicineCreate[index].unitId,
                 });
                 WarehouseMedicine.update(
                   {
                     inStock:
                       warehouse.inStock -
-                      medicineTransferMedicineCreate[index].amount *
-                        (warehouse.exchange /
-                          medicineTransferMedicineCreate[index].exchange),
+                      element.amount * (warehouse.exchange / element.exchange),
                   },
                   {
                     where: {
                       [Op.and]: [
                         {
-                          medicineId:
-                            medicineTransferMedicineCreate[index].medicineId,
+                          medicineId: element.medicineId,
                         },
                         {
                           warehouseId: warehouseId,
+                        },
+                        {
+                          receiptMedicineId: element.receiptMedicineId,
                         },
                       ],
                     },
@@ -275,19 +283,20 @@ const create = async (req, res) => {
                   {
                     inStock:
                       warehouseTransfer.inStock +
-                      medicineTransferMedicineCreate[index].amount *
-                        (warehouseTransfer.exchange /
-                          medicineTransferMedicineCreate[index].exchange),
+                      element.amount *
+                        (warehouseTransfer.exchange / element.exchange),
                   },
                   {
                     where: {
                       [Op.and]: [
                         {
-                          medicineId:
-                            medicineTransferMedicineCreate[index].medicineId,
+                          medicineId: element.medicineId,
                         },
                         {
                           warehouseId: warehouseTransferId,
+                        },
+                        {
+                          receiptMedicineId: element.receiptMedicineId,
                         },
                       ],
                     },
@@ -297,16 +306,13 @@ const create = async (req, res) => {
                   {
                     inStock:
                       warehouse.inStock -
-                      medicineTransferMedicineCreate[index].amount *
-                        (warehouse.exchange /
-                          medicineTransferMedicineCreate[index].exchange),
+                      element.amount * (warehouse.exchange / element.exchange),
                   },
                   {
                     where: {
                       [Op.and]: [
                         {
-                          medicineId:
-                            medicineTransferMedicineCreate[index].medicineId,
+                          medicineId: element.medicineId,
                         },
                         {
                           warehouseId: warehouseId,

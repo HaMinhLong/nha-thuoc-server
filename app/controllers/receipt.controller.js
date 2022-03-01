@@ -153,6 +153,7 @@ const create = async (req, res) => {
     status,
     medicines,
   } = req.body;
+
   const receiptId =
     id ||
     Math.floor(Math.random() * (100000000000 - 1000000000 + 1)) + 100000000000;
@@ -191,23 +192,23 @@ const create = async (req, res) => {
         unitId: item.receiptMedicines.unitId,
         total: item.receiptMedicines.total,
         medicineId: item.id,
+        medicineUnits: item.medicineUnits,
         receiptId: receiptId,
       };
     });
-    const warehouseMedicineCreate = receiptMedicineAdd?.map((item) => {
+    const warehouseMedicineCreate = receiptMedicineCreate?.map((item) => {
       return {
         id:
           Math.floor(Math.random() * (100000000000 - 1000000000 + 1)) +
           100000000000,
         exchange: Number(
-          item.medicineUnits.find(
-            (it) => it.unitId === item.receiptMedicines.unitId
-          ).amount
+          item.medicineUnits.find((it) => it.unitId === item.unitId).amount
         ),
-        inStock: Number(item.receiptMedicines.amount),
-        medicineId: item.id,
-        unitId: item.receiptMedicines.unitId,
+        inStock: Number(item.amount),
+        unitId: item.unitId,
+        medicineId: item.medicineId,
         warehouseId: warehouseId,
+        receiptMedicineId: item.id,
       };
     });
     Receipt.create({
@@ -224,12 +225,16 @@ const create = async (req, res) => {
       status,
     })
       .then((receipt) => {
-        ReceiptMedicine.bulkCreate(receiptMedicineCreate);
-        WarehouseMedicine.bulkCreate(warehouseMedicineCreate)
-          .then((warehouseMedicine) => {})
-          .catch((err) => {
-            console.log("err", err);
-          });
+        ReceiptMedicine.bulkCreate(receiptMedicineCreate).then(
+          (receiptMedicine) => {
+            WarehouseMedicine.bulkCreate(warehouseMedicineCreate)
+              .then((warehouseMedicine) => {})
+              .catch((err) => {
+                console.log("err", err);
+              });
+          }
+        );
+
         res.status(200).json({
           results: {
             list: receipt,
@@ -327,7 +332,6 @@ const updateRecord = async (req, res) => {
         ReceiptMedicine.bulkCreate(receiptMedicineCreate);
         for (let index = 0; index < receiptMedicineUpdate.length; index++) {
           const element = receiptMedicineUpdate[index];
-
           ReceiptMedicine.update(
             {
               barcode: element.receiptMedicines.barcode,
@@ -371,6 +375,7 @@ const updateRecord = async (req, res) => {
       });
   }
 };
+
 const updateStatus = async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
