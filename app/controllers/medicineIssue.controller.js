@@ -188,8 +188,8 @@ const create = async (req, res) => {
       ],
     },
   });
-  const MedicineIssueMedicineAdd = medicines?.filter((item) => item.flag < 0);
-  const MedicineIssueMedicineCreate = MedicineIssueMedicineAdd?.map((item) => {
+  const medicineIssueMedicineAdd = medicines?.filter((item) => item.flag < 0);
+  const medicineIssueMedicineCreate = medicineIssueMedicineAdd?.map((item) => {
     return {
       id:
         Math.floor(Math.random() * (100000000000 - 1000000000 + 1)) +
@@ -242,17 +242,17 @@ const create = async (req, res) => {
           status,
         })
           .then((medicineIssue) => {
-            MedicineIssueMedicine.bulkCreate(MedicineIssueMedicineCreate);
+            MedicineIssueMedicine.bulkCreate(medicineIssueMedicineCreate);
             for (
               let index = 0;
-              index < MedicineIssueMedicineCreate.length;
+              index < medicineIssueMedicineCreate.length;
               index++
             ) {
               WarehouseMedicine.findOne({
                 where: {
                   [Op.and]: [
                     {
-                      medicineId: MedicineIssueMedicineCreate[index].medicineId,
+                      medicineId: medicineIssueMedicineCreate[index].medicineId,
                     },
                     {
                       warehouseId: warehouseId,
@@ -264,16 +264,16 @@ const create = async (req, res) => {
                   {
                     inStock:
                       warehouse.inStock -
-                      MedicineIssueMedicineCreate[index].amount *
+                      medicineIssueMedicineCreate[index].amount *
                         (warehouse.exchange /
-                          MedicineIssueMedicineCreate[index].exchange),
+                          medicineIssueMedicineCreate[index].exchange),
                   },
                   {
                     where: {
                       [Op.and]: [
                         {
                           medicineId:
-                            MedicineIssueMedicineCreate[index].medicineId,
+                            medicineIssueMedicineCreate[index].medicineId,
                         },
                         {
                           warehouseId: warehouseId,
@@ -324,17 +324,17 @@ const create = async (req, res) => {
         status,
       })
         .then((medicineIssue) => {
-          MedicineIssueMedicine.bulkCreate(MedicineIssueMedicineCreate);
+          MedicineIssueMedicine.bulkCreate(medicineIssueMedicineCreate);
           for (
             let index = 0;
-            index < MedicineIssueMedicineCreate.length;
+            index < medicineIssueMedicineCreate.length;
             index++
           ) {
             WarehouseMedicine.findOne({
               where: {
                 [Op.and]: [
                   {
-                    medicineId: MedicineIssueMedicineCreate[index].medicineId,
+                    medicineId: medicineIssueMedicineCreate[index].medicineId,
                   },
                   {
                     warehouseId: warehouseId,
@@ -346,16 +346,16 @@ const create = async (req, res) => {
                 {
                   inStock:
                     warehouse.inStock -
-                    MedicineIssueMedicineCreate[index].amount *
+                    medicineIssueMedicineCreate[index].amount *
                       (warehouse.exchange /
-                        MedicineIssueMedicineCreate[index].exchange),
+                        medicineIssueMedicineCreate[index].exchange),
                 },
                 {
                   where: {
                     [Op.and]: [
                       {
                         medicineId:
-                          MedicineIssueMedicineCreate[index].medicineId,
+                          medicineIssueMedicineCreate[index].medicineId,
                       },
                       {
                         warehouseId: warehouseId,
@@ -400,6 +400,7 @@ const updateRecord = async (req, res) => {
     warehouseId,
     healthFacilityId,
     status,
+    medicines,
   } = req.body;
   const medicineIssue = await MedicineIssue.findOne({
     where: {
@@ -435,6 +436,67 @@ const updateRecord = async (req, res) => {
       }
     )
       .then((medicineIssue) => {
+        const medicineIssueMedicineUpdate = medicines?.filter(
+          (item) => item.flag > 0
+        );
+        const medicineIssueMedicineAdd = medicines?.filter(
+          (item) => item.flag < 0
+        );
+
+        const medicineIssueMedicineCreate = medicineIssueMedicineAdd?.map(
+          (item) => {
+            return {
+              id:
+                Math.floor(Math.random() * (100000000000 - 1000000000 + 1)) +
+                100000000000,
+              price: item.medicineIssueMedicines.price,
+              amount: item.medicineIssueMedicines.amount,
+              retail: item.medicineIssueMedicines.retail || false,
+              description: item.medicineIssueMedicines.description || "",
+              discount: item.medicineIssueMedicines.discount || 0,
+              discountType: item.medicineIssueMedicines.discountType || 1,
+              tax: item.medicineIssueMedicines.tax || 0,
+              taxType: item.medicineIssueMedicines.taxType || 1,
+              total: item.medicineIssueMedicines.total || 0,
+              unitId: item.medicineIssueMedicines.unitId,
+              exchange: item.medicineIssueMedicines.exchange,
+              medicineId: item.id,
+              medicineIssueId: id,
+            };
+          }
+        );
+
+        MedicineIssueMedicine.bulkCreate(medicineIssueMedicineCreate);
+
+        for (
+          let index = 0;
+          index < medicineIssueMedicineUpdate.length;
+          index++
+        ) {
+          const element = medicineIssueMedicineUpdate[index];
+          MedicineIssueMedicine.update(
+            {
+              price: element.medicineIssueMedicines.price,
+              amount: element.medicineIssueMedicines.amount,
+              retail: element.medicineIssueMedicines.retail,
+              description: element.medicineIssueMedicines.description,
+              discount: element.medicineIssueMedicines.discount,
+              discountType: element.medicineIssueMedicines.discountType,
+              tax: element.medicineIssueMedicines.tax,
+              taxType: element.medicineIssueMedicines.taxType,
+              total: element.medicineIssueMedicines.total,
+              unitId: element.medicineIssueMedicines.unitId,
+              exchange: element.medicineIssueMedicines.exchange,
+              medicineId: element.id,
+            },
+            {
+              where: {
+                id: element.medicineIssueMedicines.id,
+              },
+            }
+          );
+        }
+
         res.status(200).json({
           results: {
             list: medicineIssue,
@@ -454,6 +516,7 @@ const updateRecord = async (req, res) => {
       });
   }
 };
+
 const updateStatus = async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;

@@ -210,7 +210,6 @@ const create = async (req, res) => {
         warehouseId: warehouseId,
       };
     });
-    console.log("warehouseMedicineCreate", warehouseMedicineCreate);
     Receipt.create({
       id: receiptId,
       receiptCode,
@@ -283,6 +282,7 @@ const updateRecord = async (req, res) => {
   } else {
     const receiptMedicineUpdate = medicines?.filter((item) => item.flag > 0);
     const receiptMedicineAdd = medicines?.filter((item) => item.flag < 0);
+
     const receiptMedicineCreate = receiptMedicineAdd?.map((item) => {
       return {
         id:
@@ -326,29 +326,28 @@ const updateRecord = async (req, res) => {
       .then((receipt) => {
         ReceiptMedicine.bulkCreate(receiptMedicineCreate);
         for (let index = 0; index < receiptMedicineUpdate.length; index++) {
+          const element = receiptMedicineUpdate[index];
+
           ReceiptMedicine.update(
             {
-              barcode: receiptMedicineUpdate[index].receiptMedicines.barcode,
-              lotNumber:
-                receiptMedicineUpdate[index].receiptMedicines.lotNumber,
-              dateOfManufacture:
-                receiptMedicineUpdate[index].receiptMedicines.dateOfManufacture,
-              expiry: receiptMedicineUpdate[index].receiptMedicines.expiry,
-              price: receiptMedicineUpdate[index].receiptMedicines.price,
-              amount: receiptMedicineUpdate[index].receiptMedicines.amount,
-              discount: receiptMedicineUpdate[index].receiptMedicines.discount,
-              discountType:
-                receiptMedicineUpdate[index].receiptMedicines.discountType,
-              tax: receiptMedicineUpdate[index].receiptMedicines.tax,
-              taxType: receiptMedicineUpdate[index].receiptMedicines.taxType,
-              unitId: receiptMedicineUpdate[index].receiptMedicines.unitId,
-              total: receiptMedicineUpdate[index].receiptMedicines.total,
-              medicineId: receiptMedicineUpdate[index].id,
+              barcode: element.receiptMedicines.barcode,
+              lotNumber: element.receiptMedicines.lotNumber,
+              dateOfManufacture: element.receiptMedicines.dateOfManufacture,
+              expiry: element.receiptMedicines.expiry,
+              price: element.receiptMedicines.price,
+              amount: element.receiptMedicines.amount,
+              discount: element.receiptMedicines.discount,
+              discountType: element.receiptMedicines.discountType,
+              tax: element.receiptMedicines.tax,
+              taxType: element.receiptMedicines.taxType,
+              unitId: element.receiptMedicines.unitId,
+              total: element.receiptMedicines.total,
+              medicineId: element.id,
               receiptId: id,
             },
             {
               where: {
-                id: receiptMedicineUpdate[index].receiptMedicines.id,
+                id: element.receiptMedicines.id,
               },
             }
           );

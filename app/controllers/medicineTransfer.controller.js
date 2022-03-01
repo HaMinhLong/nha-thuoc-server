@@ -168,10 +168,10 @@ const create = async (req, res) => {
       ],
     },
   });
-  const MedicineTransferMedicineAdd = medicines?.filter(
+  const medicineTransferMedicineAdd = medicines?.filter(
     (item) => item.flag < 0
   );
-  const MedicineTransferMedicineCreate = MedicineTransferMedicineAdd?.map(
+  const medicineTransferMedicineCreate = medicineTransferMedicineAdd?.map(
     (item) => {
       return {
         id:
@@ -205,17 +205,17 @@ const create = async (req, res) => {
       status,
     })
       .then((medicineTransfer) => {
-        MedicineTransferMedicine.bulkCreate(MedicineTransferMedicineCreate);
+        MedicineTransferMedicine.bulkCreate(medicineTransferMedicineCreate);
         for (
           let index = 0;
-          index < MedicineTransferMedicineCreate.length;
+          index < medicineTransferMedicineCreate.length;
           index++
         ) {
           WarehouseMedicine.findOne({
             where: {
               [Op.and]: [
                 {
-                  medicineId: MedicineTransferMedicineCreate[index].medicineId,
+                  medicineId: medicineTransferMedicineCreate[index].medicineId,
                 },
                 {
                   warehouseId: warehouseId,
@@ -228,7 +228,7 @@ const create = async (req, res) => {
                 [Op.and]: [
                   {
                     medicineId:
-                      MedicineTransferMedicineCreate[index].medicineId,
+                      medicineTransferMedicineCreate[index].medicineId,
                   },
                   {
                     warehouseId: warehouseTransferId,
@@ -242,27 +242,49 @@ const create = async (req, res) => {
                     Math.floor(
                       Math.random() * (100000000000 - 1000000000 + 1)
                     ) + 100000000000,
-                  exchange: MedicineTransferMedicineCreate[index].exchange,
-                  inStock: MedicineTransferMedicineCreate[index].amount,
-                  medicineId: MedicineTransferMedicineCreate[index].medicineId,
+                  exchange: medicineTransferMedicineCreate[index].exchange,
+                  inStock: medicineTransferMedicineCreate[index].amount,
+                  medicineId: medicineTransferMedicineCreate[index].medicineId,
                   warehouseId: warehouseTransferId,
-                  unitId: MedicineTransferMedicineCreate[index].unitId,
+                  unitId: medicineTransferMedicineCreate[index].unitId,
                 });
-              } else {
                 WarehouseMedicine.update(
                   {
                     inStock:
-                      warehouseTransfer.inStock +
-                      MedicineTransferMedicineCreate[index].amount *
-                        (warehouseTransfer.exchange /
-                          MedicineTransferMedicineCreate[index].exchange),
+                      warehouse.inStock -
+                      medicineTransferMedicineCreate[index].amount *
+                        (warehouse.exchange /
+                          medicineTransferMedicineCreate[index].exchange),
                   },
                   {
                     where: {
                       [Op.and]: [
                         {
                           medicineId:
-                            MedicineTransferMedicineCreate[index].medicineId,
+                            medicineTransferMedicineCreate[index].medicineId,
+                        },
+                        {
+                          warehouseId: warehouseId,
+                        },
+                      ],
+                    },
+                  }
+                );
+              } else {
+                WarehouseMedicine.update(
+                  {
+                    inStock:
+                      warehouseTransfer.inStock +
+                      medicineTransferMedicineCreate[index].amount *
+                        (warehouseTransfer.exchange /
+                          medicineTransferMedicineCreate[index].exchange),
+                  },
+                  {
+                    where: {
+                      [Op.and]: [
+                        {
+                          medicineId:
+                            medicineTransferMedicineCreate[index].medicineId,
                         },
                         {
                           warehouseId: warehouseTransferId,
@@ -275,16 +297,16 @@ const create = async (req, res) => {
                   {
                     inStock:
                       warehouse.inStock -
-                      MedicineTransferMedicineCreate[index].amount *
+                      medicineTransferMedicineCreate[index].amount *
                         (warehouse.exchange /
-                          MedicineTransferMedicineCreate[index].exchange),
+                          medicineTransferMedicineCreate[index].exchange),
                   },
                   {
                     where: {
                       [Op.and]: [
                         {
                           medicineId:
-                            MedicineTransferMedicineCreate[index].medicineId,
+                            medicineTransferMedicineCreate[index].medicineId,
                         },
                         {
                           warehouseId: warehouseId,

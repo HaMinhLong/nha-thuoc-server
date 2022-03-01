@@ -166,8 +166,8 @@ const create = async (req, res) => {
       ],
     },
   });
-  const ConsumableMedicineAdd = medicines?.filter((item) => item.flag < 0);
-  const ConsumableMedicineCreate = ConsumableMedicineAdd?.map((item) => {
+  const consumableMedicineAdd = medicines?.filter((item) => item.flag < 0);
+  const consumableMedicineCreate = consumableMedicineAdd?.map((item) => {
     return {
       id:
         Math.floor(Math.random() * (100000000000 - 1000000000 + 1)) +
@@ -198,13 +198,13 @@ const create = async (req, res) => {
       status,
     })
       .then((consumable) => {
-        ConsumableMedicine.bulkCreate(ConsumableMedicineCreate);
-        for (let index = 0; index < ConsumableMedicineCreate.length; index++) {
+        ConsumableMedicine.bulkCreate(consumableMedicineCreate);
+        for (let index = 0; index < consumableMedicineCreate.length; index++) {
           WarehouseMedicine.findOne({
             where: {
               [Op.and]: [
                 {
-                  medicineId: ConsumableMedicineCreate[index].medicineId,
+                  medicineId: consumableMedicineCreate[index].medicineId,
                 },
                 {
                   warehouseId: warehouseId,
@@ -216,15 +216,15 @@ const create = async (req, res) => {
               {
                 inStock:
                   warehouse.inStock -
-                  ConsumableMedicineCreate[index].amount *
+                  consumableMedicineCreate[index].amount *
                     (warehouse.exchange /
-                      ConsumableMedicineCreate[index].exchange),
+                      consumableMedicineCreate[index].exchange),
               },
               {
                 where: {
                   [Op.and]: [
                     {
-                      medicineId: ConsumableMedicineCreate[index].medicineId,
+                      medicineId: consumableMedicineCreate[index].medicineId,
                     },
                     {
                       warehouseId: warehouseId,
@@ -265,6 +265,7 @@ const updateRecord = async (req, res) => {
     healthFacilityId,
     warehouseId,
     status,
+    medicines,
   } = req.body;
   const consumable = await Consumable.findOne({
     where: {
@@ -297,6 +298,48 @@ const updateRecord = async (req, res) => {
       }
     )
       .then((consumable) => {
+        const consumableMedicineUpdate = medicines?.filter(
+          (item) => item.flag > 0
+        );
+        const consumableMedicineAdd = medicines?.filter(
+          (item) => item.flag < 0
+        );
+        const consumableMedicineCreate = consumableMedicineAdd?.map((item) => {
+          return {
+            id:
+              Math.floor(Math.random() * (100000000000 - 1000000000 + 1)) +
+              100000000000,
+            amount: item.consumableMedicines.amount,
+            price: item.consumableMedicines.price,
+            total: item.consumableMedicines.total || 0,
+            unitId: item.consumableMedicines.unitId,
+            exchange: item.consumableMedicines.exchange,
+            medicineId: item.id,
+            consumableId: id,
+          };
+        });
+
+        ConsumableMedicine.bulkCreate(consumableMedicineCreate);
+
+        for (let index = 0; index < consumableMedicineUpdate.length; index++) {
+          const element = consumableMedicineUpdate[index];
+          ConsumableMedicine.update(
+            {
+              amount: element.consumableMedicines.amount,
+              price: element.consumableMedicines.price,
+              total: element.consumableMedicines.total,
+              unitId: element.consumableMedicines.unitId,
+              exchange: element.consumableMedicines.exchange,
+              medicineId: element.id,
+            },
+            {
+              where: {
+                id: element.consumableMedicines.id,
+              },
+            }
+          );
+        }
+
         res.status(200).json({
           results: {
             list: consumable,
