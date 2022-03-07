@@ -206,7 +206,7 @@ const expiredMedicineReportV2 = async (req, res) => {
     JOIN warehouses AS W ON W.id = WM.warehouseId
     JOIN producers AS P ON P.id = M.producerId
     JOIN receiptMedicines AS RM ON RM.id = WM.receiptMedicineId
-    WHERE expiry <= :toDate AND expiry >= fromDate AND M.healthFacilityId LIKE :healthFacilityId
+    WHERE expiry <= :toDate AND expiry >= :fromDate AND M.healthFacilityId LIKE :healthFacilityId
     AND W.id LIKE :warehouseId AND medicineName LIKE :medicineName;
     `,
     {
@@ -232,10 +232,54 @@ const expiredMedicineReportV2 = async (req, res) => {
   });
 };
 
+const medicine = async (req, res) => {
+  const { filter } = req.query;
+  const filters = filter ? JSON.parse(filter) : {};
+  const medicineName = `%${filters.medicineName ? filters?.medicineName : ""}%`;
+  const healthFacilityId = `%${
+    filters.healthFacilityId ? filters?.healthFacilityId : ""
+  }%`;
+
+  const fromDate = filters.fromDate || "2021-01-01T14:06:48.000Z";
+  const toDate = filters.toDate || moment().format();
+
+  const report = await Sequelize.query(
+    `SELECT medicineName, registrationNumber, price, amount, country
+    , discount, discountType, tax, taxType, total,
+    price * amount AS totalRevenue, MIM.createdAt
+    FROM medicineIssueMedicines AS MIM
+    JOIN medicines AS M ON M.id = MIM.medicineId
+    WHERE MIM.createdAt <= :toDate AND MIM.createdAt >= :fromDate 
+    AND M.healthFacilityId LIKE :healthFacilityId
+    AND medicineName LIKE :medicineName;
+    `,
+    {
+      replacements: {
+        healthFacilityId: healthFacilityId,
+        medicineName: medicineName,
+        fromDate: fromDate,
+        toDate: toDate,
+      },
+      type: QueryTypes.SELECT,
+    }
+  );
+
+  res.status(200).json({
+    results: {
+      list: report,
+      pagination: {},
+    },
+    success: true,
+    error: "",
+    message: "",
+  });
+};
+
 module.exports = {
   customerReport,
   employeeReport,
   supplierReport,
   expiredMedicineReport,
   expiredMedicineReportV2,
+  medicine,
 };
