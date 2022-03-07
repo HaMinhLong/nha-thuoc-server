@@ -141,8 +141,101 @@ const supplierReport = async (req, res) => {
   });
 };
 
+const expiredMedicineReport = async (req, res) => {
+  const { filter } = req.query;
+  const filters = filter ? JSON.parse(filter) : {};
+  const medicineName = `%${filters.medicineName ? filters?.medicineName : ""}%`;
+  const warehouseId = `%${filters.warehouseId ? filters?.warehouseId : ""}%`;
+  const healthFacilityId = `%${
+    filters.healthFacilityId ? filters?.healthFacilityId : ""
+  }%`;
+  const toDate = filters.toDate || moment().format();
+
+  const report = await Sequelize.query(
+    `SELECT medicineName, expiry, unitName, WM.inStock, price
+    , warehouseName, registrationNumber, producerName, price * WM.inStock AS total
+    FROM warehouseMedicines AS WM
+    JOIN medicines AS M ON M.id = WM.medicineId
+    JOIN units AS U ON U.id = WM.unitId
+    JOIN warehouses AS W ON W.id = WM.warehouseId
+    JOIN producers AS P ON P.id = M.producerId
+    JOIN receiptMedicines AS RM ON RM.id = WM.receiptMedicineId
+    WHERE expiry < :toDate AND M.healthFacilityId LIKE :healthFacilityId
+    AND W.id LIKE :warehouseId AND medicineName LIKE :medicineName;
+    `,
+    {
+      replacements: {
+        healthFacilityId: healthFacilityId,
+        medicineName: medicineName,
+        warehouseId: warehouseId,
+        toDate: toDate,
+      },
+      type: QueryTypes.SELECT,
+    }
+  );
+
+  res.status(200).json({
+    results: {
+      list: report,
+      pagination: {},
+    },
+    success: true,
+    error: "",
+    message: "",
+  });
+};
+
+const expiredMedicineReportV2 = async (req, res) => {
+  const { filter } = req.query;
+  const filters = filter ? JSON.parse(filter) : {};
+  const medicineName = `%${filters.medicineName ? filters?.medicineName : ""}%`;
+  const warehouseId = `%${filters.warehouseId ? filters?.warehouseId : ""}%`;
+  const healthFacilityId = `%${
+    filters.healthFacilityId ? filters?.healthFacilityId : ""
+  }%`;
+
+  const fromDate = filters.fromDate || "2021-01-01T14:06:48.000Z";
+  const toDate = filters.toDate || moment().format();
+
+  const report = await Sequelize.query(
+    `SELECT medicineName, expiry, unitName, WM.inStock, price
+    , warehouseName, registrationNumber, producerName, price * WM.inStock AS total
+    FROM warehouseMedicines AS WM
+    JOIN medicines AS M ON M.id = WM.medicineId
+    JOIN units AS U ON U.id = WM.unitId
+    JOIN warehouses AS W ON W.id = WM.warehouseId
+    JOIN producers AS P ON P.id = M.producerId
+    JOIN receiptMedicines AS RM ON RM.id = WM.receiptMedicineId
+    WHERE expiry <= :toDate AND expiry >= fromDate AND M.healthFacilityId LIKE :healthFacilityId
+    AND W.id LIKE :warehouseId AND medicineName LIKE :medicineName;
+    `,
+    {
+      replacements: {
+        healthFacilityId: healthFacilityId,
+        medicineName: medicineName,
+        warehouseId: warehouseId,
+        fromDate: fromDate,
+        toDate: toDate,
+      },
+      type: QueryTypes.SELECT,
+    }
+  );
+
+  res.status(200).json({
+    results: {
+      list: report,
+      pagination: {},
+    },
+    success: true,
+    error: "",
+    message: "",
+  });
+};
+
 module.exports = {
   customerReport,
   employeeReport,
   supplierReport,
+  expiredMedicineReport,
+  expiredMedicineReportV2,
 };
