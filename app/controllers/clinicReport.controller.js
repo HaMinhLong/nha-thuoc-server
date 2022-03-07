@@ -45,6 +45,52 @@ const doctorReport = async (req, res) => {
   });
 };
 
+const customerReport = async (req, res) => {
+  const { filter } = req.query;
+  const filters = filter ? JSON.parse(filter) : {};
+  const customerName = `%${filters.customerName ? filters?.customerName : ""}%`;
+  const mobile = `%${filters.mobile ? filters?.mobile : ""}%`;
+  const healthFacilityId = `%${
+    filters.healthFacilityId ? filters?.healthFacilityId : ""
+  }%`;
+  const fromDate = filters.fromDate || "2021-01-01T14:06:48.000Z";
+  const toDate = filters.toDate || moment().format();
+
+  const report = await Sequelize.query(
+    `SELECT customerName, price, amount, discount, discountType,
+    tax, taxType, CRS.total, mobile, 
+    price * amount AS totalRevenue
+    FROM clinicReceiptServices AS CRS
+    JOIN clinicReceipts AS CR ON CR.id = CRS.clinicReceiptId
+    JOIN customers AS C ON C.id = CR.customerId
+    WHERE customerName LIKE :customerName
+    AND mobile LIKE :mobile
+    AND CR.healthFacilityId LIKE :healthFacilityId
+    AND CR.createdAt >= :fromDate AND CR.createdAt <= :toDate;
+    `,
+    {
+      replacements: {
+        healthFacilityId: healthFacilityId,
+        customerName: customerName,
+        mobile: mobile,
+        fromDate: fromDate,
+        toDate: toDate,
+      },
+      type: QueryTypes.SELECT,
+    }
+  );
+  res.status(200).json({
+    results: {
+      list: report,
+      pagination: {},
+    },
+    success: true,
+    error: "",
+    message: "",
+  });
+};
+
 module.exports = {
   doctorReport,
+  customerReport,
 };
