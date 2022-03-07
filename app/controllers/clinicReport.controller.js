@@ -34,6 +34,7 @@ const doctorReport = async (req, res) => {
       type: QueryTypes.SELECT,
     }
   );
+
   res.status(200).json({
     results: {
       list: report,
@@ -59,7 +60,7 @@ const customerReport = async (req, res) => {
   const report = await Sequelize.query(
     `SELECT customerName, price, amount, discount, discountType,
     tax, taxType, CRS.total, mobile, 
-    price * amount AS totalRevenue
+    price * amount AS totalRevenue, CR.createdAt
     FROM clinicReceiptServices AS CRS
     JOIN clinicReceipts AS CR ON CR.id = CRS.clinicReceiptId
     JOIN customers AS C ON C.id = CR.customerId
