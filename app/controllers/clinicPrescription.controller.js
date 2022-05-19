@@ -69,7 +69,14 @@ const getList = async (req, res) => {
           {
             model: Customer,
             required: true,
-            attributes: ["id", "customerName", "mobile", "dateOfBirth"],
+            attributes: [
+              "id",
+              "customerName",
+              "mobile",
+              "dateOfBirth",
+              "address",
+              "gender",
+            ],
             where: {
               [Op.and]: [
                 {

@@ -80,7 +80,7 @@ const getList = async (req, res) => {
       },
       {
         model: HealthFacility,
-        required: true,
+        required: false,
         where: {
           [Op.and]: [
             { id: { [Op.like]: "%" + healthFacilityId + "%" } },
@@ -169,7 +169,7 @@ const create = async (req, res) => {
   const mailFrom =
     config && config[0] && config[0].email
       ? config[0].email
-      : "a34526@thanglong.edu.vn";
+      : "longhm@beetsoft.com.vn";
   const passwordEmail =
     config && config[0] && config[0].password
       ? config[0].password
@@ -256,7 +256,7 @@ const createByXLSX = async (req, res) => {
       const mailFrom =
         config && config[0] && config[0].email
           ? config[0].email
-          : "a34526@thanglong.edu.vn";
+          : "longhm@beetsoft.com.vn";
       const passwordEmail =
         config && config[0] && config[0].password
           ? config[0].password
@@ -569,7 +569,7 @@ const forgetPassword = async (req, res) => {
   const mailFrom =
     config && config[0] && config[0].email
       ? config[0].email
-      : "a34526@thanglong.edu.vn";
+      : "longhm@beetsoft.com.vn";
   const password =
     config && config[0] && config[0].password
       ? config[0].password

@@ -42,7 +42,7 @@ const getList = async (req, res) => {
           },
         },
         { clinicTypeId: { [Op.like]: "%" + clinicTypeId + "%" } },
-        { healthFacilityId: { [Op.like]: "%" + healthFacilityId + "%" } },
+        // { healthFacilityId: { [Op.like]: "%" + healthFacilityId + "%" } },
       ],
       createdAt: {
         [Op.between]: [fromDate, toDate],

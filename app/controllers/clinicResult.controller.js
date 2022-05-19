@@ -4,6 +4,8 @@ const MedicalRegister = db.medicalRegister;
 const User = db.user;
 const Customer = db.customer;
 const ClinicService = db.clinicService;
+const ClinicServicePackage = db.clinicServicePackage;
+const ClinicType = db.clinicType;
 const moment = require("moment");
 
 const Op = db.Sequelize.Op;
@@ -47,6 +49,20 @@ const getList = async (req, res) => {
             model: ClinicService,
             required: true,
             attributes: ["id", "clinicServiceName", "price"],
+            include: [
+              {
+                model: ClinicServicePackage,
+                required: true,
+                attributes: ["id", "clinicServicePackageName", "printFormId"],
+                include: [
+                  {
+                    model: ClinicType,
+                    required: true,
+                    attributes: ["id", "clinicTypeName"],
+                  },
+                ],
+              },
+            ],
           },
           {
             model: User,

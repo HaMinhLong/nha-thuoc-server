@@ -20,7 +20,7 @@ const doctorReport = async (req, res) => {
     JOIN clinicReceipts AS CR ON MR.id = CR.medicalRegisterId
     JOIN clinicReceiptServices AS CRS ON CRS.clinicReceiptId = CR.id
     JOIN clinicServices AS CS ON CRS.clinicServiceId = CS.id
-    WHERE userGroupId = 12345678911 AND fullName LIKE :doctorName
+    WHERE userGroupId = 168704149227 AND fullName LIKE :doctorName
     AND MR.healthFacilityId LIKE :healthFacilityId
     AND CR.createdAt >= :fromDate AND CR.createdAt <= :toDate;
     `,

@@ -37,7 +37,6 @@ const getList = async (req, res) => {
   const medicineName = filters.medicineName || "";
   const medicineTypeId = filters.medicineTypeId || "";
   const producerId = filters.producerId || "";
-  const healthFacilityId = filters.healthFacilityId || "";
   const fromDate = filters.fromDate || "2021-01-01T14:06:48.000Z";
   const toDate = filters.toDate || moment();
   const size = ranges[1] - ranges[0];
@@ -50,7 +49,6 @@ const getList = async (req, res) => {
         { medicineName: { [Op.like]: "%" + medicineName + "%" } },
         { medicineTypeId: { [Op.like]: "%" + medicineTypeId + "%" } },
         { producerId: { [Op.like]: "%" + producerId + "%" } },
-        { healthFacilityId: { [Op.like]: "%" + healthFacilityId + "%" } },
       ],
       createdAt: {
         [Op.between]: [fromDate, toDate],

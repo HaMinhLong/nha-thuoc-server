@@ -80,7 +80,7 @@ const getList = async (req, res) => {
           {
             model: ClinicServicePackage,
             required: true,
-            attributes: ["id", "clinicServicePackageName"],
+            attributes: ["id", "clinicServicePackageName", "printFormId"],
             include: [
               {
                 model: ClinicType,
@@ -111,7 +111,14 @@ const getList = async (req, res) => {
       {
         model: Customer,
         required: true,
-        attributes: ["id", "customerName", "mobile", "dateOfBirth", "address"],
+        attributes: [
+          "id",
+          "customerName",
+          "mobile",
+          "dateOfBirth",
+          "address",
+          "gender",
+        ],
         where: {
           [Op.and]: [
             {
