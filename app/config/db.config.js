@@ -1,7 +1,7 @@
 module.exports = {
   HOST: "localhost",
   USER: "halong",
-  PASSWORD: "Na+89-K-2",
+  PASSWORD: "halong",
   DB: "nha_thuoc_cms",
   dialect: "mysql",
   pool: {
